@@ -15,7 +15,7 @@ FPS = 60
 clock = pygame.time.Clock()
 running = True
 
-director.set_scene(GameScene)
+director.change_scene(GameScene)
 
 while running:
     dt = clock.tick(FPS)
@@ -33,6 +33,9 @@ while running:
     director.scene.handle_events(events)
     director.scene.update(dt)
     director.scene.render(surface)
+
+    if director.next_scene is not None:
+        director._set_scene()
 
     if debug.is_active():
         debug.render(surface)

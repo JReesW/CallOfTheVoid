@@ -3,14 +3,21 @@ import pygame
 from engine.scene import Scene
 
 scene = None
+next_scene = None
 
 
-def set_scene(_scene: Scene, *args, **kwargs) -> None:
+def change_scene(_scene: Scene, *args, **kwargs) -> None:
     """
-    Set the current scene to the given scene
+    Change the current scene to the given scene on the next frame
     """
-    global scene
-    scene = _scene(*args, **kwargs)
+    global next_scene
+    next_scene = _scene(*args, **kwargs)
+
+
+def _set_scene() -> None:
+    global scene, next_scene
+    scene = next_scene
+    next_scene = None
 
 
 def quit() -> None:
