@@ -26,7 +26,7 @@ while running:
     events = pygame.event.get()
 
     for event in events:
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_q and (event.mod & pygame.KMOD_CTRL)):
             pygame.quit()
             sys.exit()
 
