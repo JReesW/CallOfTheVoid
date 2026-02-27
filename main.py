@@ -9,16 +9,24 @@ pygame.init()
 pygame.freetype.init()
 
 
+display_info = pygame.display.Info()
+
+SCREEN_SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = (1920, 1080)
+SCALED_SIZE = SCALED_WIDTH, SCALED_HEIGHT = (display_info.current_w, display_info.current_h)
+
+
 screen = pygame.display.set_mode(
-    (1920, 1080),
+    SCALED_SIZE,
     pygame.FULLSCREEN | pygame.OPENGL | pygame.DOUBLEBUF
 )
 pygame.display.set_caption("Pygame project")
 
 post = postprocessing.PostProcessing(
-    (1920, 1080),
+    SCALED_SIZE,
     str((Path.cwd() / "resources" / "shaders" / "postprocessing.glsl").absolute())
 )
+# Comment this when disable post-processing
+screen = pygame.Surface(SCREEN_SIZE)
 
 FPS = 60
 clock = pygame.time.Clock()
