@@ -1,4 +1,5 @@
 import pygame
+from engine.util import get_path
 
 
 class AudioHandler:
@@ -27,7 +28,7 @@ class AudioHandler:
         Play background music.
         loops=-1 means infinite.
         """
-        pygame.mixer.music.load(f"resources/music/{name}.mp3")
+        pygame.mixer.music.load(get_path(f"resources/music/{name}.mp3"))
         pygame.mixer.music.set_volume(
             0 if self.music_muted else self.music_volume
         )
@@ -56,7 +57,7 @@ class AudioHandler:
 
     def load_sound(self, name):
         """Preload a sound and cache it."""
-        sound = pygame.mixer.Sound(f"resources/sounds/{name}.mp3")
+        sound = pygame.mixer.Sound(get_path(f"resources/sounds/{name}.mp3"))
         sound.set_volume(self.sfx_volume)
         self.sounds[name] = sound
 

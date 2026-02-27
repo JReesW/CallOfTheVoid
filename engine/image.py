@@ -2,6 +2,7 @@ from typing import Optional
 
 import pygame
 from engine import colors
+from engine.util import get_path
 
 
 __images = {}
@@ -15,7 +16,7 @@ def load_image(name: str, rotation: int = 0, size: Optional[tuple[int, int]] = N
      - scaling to a given size
     """
     if name not in __images:
-        __images[name] = pygame.image.load(f"resources/images/{name}").convert_alpha()
+        __images[name] = pygame.image.load(get_path(f"resources/images/{name}")).convert_alpha()
     result = __images[name]
     if rotation != 0:
         result = pygame.transform.rotate(result, rotation)

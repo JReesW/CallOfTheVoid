@@ -1,6 +1,8 @@
 import pygame
 import json
 
+from engine.util import get_path
+
 
 class SpriteSheet:
     """
@@ -24,8 +26,8 @@ class SpriteSheet:
         """
         Load all the sprite sheet info in
         """
-        surface = pygame.image.load(f"resources/spritesheets/{name}.png").convert_alpha()
-        with open(f"resources/spritesheets/{name}.json") as f:
+        surface = pygame.image.load(get_path(f"resources/spritesheets/{name}.png")).convert_alpha()
+        with open(get_path(f"resources/spritesheets/{name}.json")) as f:
             sheet_info = json.load(f)
         
         if sheet_info["usesColorKey"]:
