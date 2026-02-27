@@ -1,15 +1,24 @@
 import sys
+from pathlib import Path
 import pygame
 
-from engine import debug, director
+from engine import debug, director, postprocessing
 from scenes.game import GameScene
 
 pygame.init()
 pygame.freetype.init()
 
 
-screen = pygame.display.set_mode((1920, 1080), pygame.FULLSCREEN | pygame.SCALED)
+screen = pygame.display.set_mode(
+    (1920, 1080),
+    pygame.FULLSCREEN | pygame.OPENGL | pygame.DOUBLEBUF
+)
 pygame.display.set_caption("Pygame project")
+
+post = postprocessing.PostProcessing(
+    (1920, 1080),
+    str((Path.cwd() / "resources" / "shaders" / "postprocessing.glsl").absolute())
+)
 
 FPS = 60
 clock = pygame.time.Clock()
@@ -42,6 +51,12 @@ while running:
         debug.render(surface)
 
     screen.blit(surface, (0, 0))
+
+    mouse = pygame.mouse.get_pos()
+    pygame.draw.circle(screen, (255, 255, 0), mouse, 15, 0)
+
+    post.upload(screen)
+    post.render()
 
     # Draw the surface to the screen
     pygame.display.flip()
