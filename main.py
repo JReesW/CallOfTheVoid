@@ -16,6 +16,7 @@ clock = pygame.time.Clock()
 running = True
 
 director.change_scene(GameScene)
+director._set_scene()
 
 while running:
     dt = clock.tick(FPS)
