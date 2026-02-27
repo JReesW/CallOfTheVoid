@@ -9,7 +9,7 @@ last_click_time = 0
 last_click_pos = None
 
 
-def double_clicked(events: list[pygame.event.Event]):
+def double_clicked(events: list[pygame.event.Event]) -> bool:
     """
     Detect a double-click
     """
@@ -33,3 +33,4 @@ def double_clicked(events: list[pygame.event.Event]):
 
             last_click_time = now
             last_click_pos = pos
+    return False

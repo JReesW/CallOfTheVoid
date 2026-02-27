@@ -21,4 +21,7 @@ def _set_scene() -> None:
 
 
 def quit() -> None:
+    """
+    Post a quit event to quit the game
+    """
     pygame.event.post(pygame.Event(pygame.QUIT))

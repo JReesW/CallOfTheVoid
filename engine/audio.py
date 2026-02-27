@@ -2,6 +2,10 @@ import pygame
 
 
 class AudioHandler:
+    """
+    Basic handler for sound effects and music
+    """
+    
     def __init__(self):
         pygame.mixer.init()
         
@@ -19,7 +23,10 @@ class AudioHandler:
     # Music
 
     def play_music(self, name, loops=-1, fade_ms=1000):
-        """Play background music. loops=-1 means infinite."""
+        """
+        Play background music.
+        loops=-1 means infinite.
+        """
         pygame.mixer.music.load(f"resources/music/{name}.mp3")
         pygame.mixer.music.set_volume(
             0 if self.music_muted else self.music_volume
