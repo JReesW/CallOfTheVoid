@@ -1,16 +1,31 @@
 import pygame
 from engine.scene import Scene
+from engine import colors
+from game.block import Block
+from game.player import Player
 
 
 class GameScene(Scene):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.player = Player()
+        self.player.position = pygame.math.Vector2(500, 500)
+
+        self.blocks = []
+        self.blocks.append(Block(size=(100, 20), position=(500, 600)))
+        self.blocks.append(Block(size=(20, 100), position=(600, 500)))
     
     def handle_events(self, events):
-        pass
+        self.player.handle_events(events)
 
     def update(self, dt):
-        pass
+        self.player.update(dt, self.blocks)
 
     def render(self, surface):
-        pass
+        surface.fill(colors.black)
+
+        self.player.render(surface)
+
+        for block in self.blocks:
+            block.render(surface)
