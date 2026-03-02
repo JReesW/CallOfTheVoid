@@ -1,15 +1,33 @@
 import sys
+from pathlib import Path
 import pygame
 
-from engine import debug, director
+from engine import debug, director, postprocessing
 from scenes.game import GameScene
 
 pygame.init()
 pygame.freetype.init()
 
 
-screen = pygame.display.set_mode((1920, 1080), pygame.FULLSCREEN | pygame.SCALED)
+display_info = pygame.display.Info()
+
+SCREEN_SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = (1920, 1080)
+SCALED_SIZE = SCALED_WIDTH, SCALED_HEIGHT = (display_info.current_w, display_info.current_h)
+SCALE = pygame.Vector2(SCALED_WIDTH / SCREEN_WIDTH, SCALED_HEIGHT / SCREEN_HEIGHT)
+
+
+screen = pygame.display.set_mode(
+    SCALED_SIZE,
+    pygame.FULLSCREEN | pygame.OPENGL | pygame.DOUBLEBUF
+)
 pygame.display.set_caption("Pygame project")
+
+post = postprocessing.PostProcessing(
+    SCREEN_SIZE,
+    str((Path.cwd() / "resources" / "shaders" / "postprocessing.glsl").absolute())
+)
+# Comment this screen overwrite when disable post-processing
+screen = pygame.Surface(SCREEN_SIZE)
 
 FPS = 60
 clock = pygame.time.Clock()
@@ -42,6 +60,12 @@ while running:
         debug.render(surface)
 
     screen.blit(surface, (0, 0))
+
+    mouse = pygame.Vector2(*pygame.mouse.get_pos(desktop=True)).elementwise() / SCALE
+    pygame.draw.circle(screen, (255, 255, 0), mouse, 15, 0)
+
+    post.upload(screen)
+    post.render()
 
     # Draw the surface to the screen
     pygame.display.flip()
