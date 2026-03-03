@@ -2,7 +2,7 @@ import pygame
 import json
 
 from engine.scene import Scene
-from engine import colors, director, image, text
+from engine import colors, director, image, text, mouse
 from engine.util import get_path
 
 from game.level import load_level
@@ -46,7 +46,7 @@ class EditorScene(Scene):
         self.generate_images()
     
     def handle_events(self, events):
-        self.mouse = pygame.mouse.get_pos()
+        self.mouse = mouse.mousepos()
 
         for event in events:
             if event.type == pygame.KEYDOWN:

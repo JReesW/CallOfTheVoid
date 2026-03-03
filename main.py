@@ -63,9 +63,6 @@ while running:
 
     screen.blit(surface, (0, 0))
 
-    mouse = pygame.Vector2(*pygame.mouse.get_pos(desktop=True)).elementwise() / SCALE
-    pygame.draw.circle(screen, (255, 255, 0), mouse, 15, 0)
-
     post.upload(screen)
     post.render()
 
