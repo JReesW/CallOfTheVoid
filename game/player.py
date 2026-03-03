@@ -24,7 +24,7 @@ class Player(pygame.sprite.Sprite):
 
         self.debugActive = True
 
-    def debug_print(self, message):
+    def debug_print(self, *message):
         if self.debugActive:
             print(message)
 
