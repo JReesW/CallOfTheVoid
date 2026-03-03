@@ -1,5 +1,6 @@
 import pygame
 import json
+from pathlib import Path
 
 from engine.spritesheet import SpriteSheet
 from engine.util import get_path
@@ -37,8 +38,20 @@ def load_level(name: str) -> Level:
     """
     Load a level by its filename in resources/levels
     """
-    with open(get_path(f"resources/levels/{name}.json")) as f:
-        level_info = json.load(f)
+    file_path = Path(get_path(f"resources/levels/{name}.json"))
+    if file_path.exists():
+        with open(file_path) as f:
+            level_info = json.load(f)
+    else:
+        level_info = {
+            "spritesheet": "cave",
+            "tilemap": [
+                ["CTL", *(["B"] * 38), "CTR"],
+                *([["MR", *([""] * 38), "ML"]] * 21),
+                ["CBL", *(["T"] * 38), "CBR"]
+            ]
+        }
+        print(level_info)
     
     level = Level(level_info["spritesheet"], level_info["tilemap"])
     return level
