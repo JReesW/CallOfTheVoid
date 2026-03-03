@@ -3,6 +3,7 @@ import pygame
 
 from engine import debug, director
 from scenes.editor import EditorScene
+from scenes.game import GameScene
 
 pygame.init()
 pygame.freetype.init()
@@ -15,7 +16,7 @@ FPS = 60
 clock = pygame.time.Clock()
 running = True
 
-director.change_scene(EditorScene)
+director.change_scene(GameScene)
 director._set_scene()
 
 while running:

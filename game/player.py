@@ -22,7 +22,7 @@ class Player(pygame.sprite.Sprite):
 
         self.grounded = False
 
-        self.debugActive = True
+        self.debugActive = False
 
     def debug_print(self, *message):
         if self.debugActive:
