@@ -25,10 +25,11 @@ class Level:
     Object representing everything about a level
     """
 
-    def __init__(self, sheet: str, tilemap: list[list[str]]):
+    def __init__(self, sheet: str, tilemap: list[list[str]], solid: list[str]):
         self.spritesheet = SpriteSheet(sheet)
         self.tilemap = tilemap
         self.surface = generate_level_surface(self.spritesheet, tilemap)
+        self.solid = solid
     
     def redraw(self):
         self.surface = generate_level_surface(self.spritesheet, self.tilemap)
@@ -49,9 +50,10 @@ def load_level(name: str) -> Level:
                 ["CTL", *(["B"] * 38), "CTR"],
                 *([["MR", *([""] * 38), "ML"]] * 21),
                 ["CBL", *(["T"] * 38), "CBR"]
-            ]
+            ],
+            "solid": ["TL", "T", "TR", "ML", "M", "MR", "BL", "B", "BR", "CTL", "CTR", "CBL", "CBR"]
         }
         print(level_info)
     
-    level = Level(level_info["spritesheet"], level_info["tilemap"])
+    level = Level(level_info["spritesheet"], level_info["tilemap"], level_info["solid"])
     return level

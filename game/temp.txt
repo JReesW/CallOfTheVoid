@@ -1,3 +1,0 @@
-this is here so that git recognizes this folder's existence
-
-game mechanic files go here

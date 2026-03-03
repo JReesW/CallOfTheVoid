@@ -15,7 +15,7 @@ clock = pygame.time.Clock()
 running = True
 
 director.find_scenes()
-director.change_scene("GameScene")
+director.change_scene("EditorScene")
 director._set_scene()
 
 while running:

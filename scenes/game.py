@@ -13,6 +13,7 @@ class GameScene(Scene):
         super().__init__(*args, **kwargs)
 
         self.level = load_level("test")
+        self.allow_edit = "allow_edit" in kwargs and kwargs["allow_edit"]
 
         self.player = Player()
         self.player.position = pygame.math.Vector2(500, 500)
@@ -29,10 +30,10 @@ class GameScene(Scene):
         self.buttons.append(Button(size=(50, 50), position=(600, 550), gates=[self.gates[0]]))
     
     def handle_events(self, events):
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_LCTRL] and keys[pygame.K_LSHIFT] and keys[pygame.K_s]:
-            director.change_scene("EditorScene")
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p and (event.mod & pygame.KMOD_CTRL) and self.allow_edit:
+                    director.change_scene("EditorScene")
         
         self.player.handle_events(events)
 
