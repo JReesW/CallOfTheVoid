@@ -1,16 +1,13 @@
 import pygame
-from pathlib import Path
-import os
-import importlib
-import inspect
 
 from engine.scene import Scene
-from engine.util import get_path
+
+import scenes
 
 
-__scenes = {}
-scene = None
-next_scene = None
+__scenes: dict[str, Scene] = {}
+scene: Scene = None
+next_scene: Scene = None
 
 
 def change_scene(_scene: str, *args, **kwargs) -> None:
@@ -29,27 +26,10 @@ def _set_scene() -> None:
 
 def find_scenes(path: str = "scenes") -> None:
     """
-    Automatically loads all scene classes found in the scenes folder
+    Load all scene classes defined in the scenes module
     """
-    module_path = Path(get_path(path))
-
-    # Check every file in the scenes module
-    for file in os.listdir(module_path):
-        # If it's a python file that isn't marked as protected
-        if file.endswith('.py') and not file.startswith('__'):
-            module_name = f".{file[:-3]}"
-            relative_path = str(path).replace('/', '.')
-
-            try:
-                # Import the scene file
-                module = importlib.import_module(module_name, package=relative_path)
-
-                # Check for Scene derived classes, and store them
-                for name, obj in inspect.getmembers(module, inspect.isclass):
-                    if issubclass(obj, Scene) and obj is not Scene:
-                        __scenes[name] = obj
-            except Exception as e:
-                print(f"Error loading Scene from {module_name}: {e}")
+    for scene in scenes.scenes:
+        __scenes[scene.__name__] = scene
 
 
 def quit() -> None:
