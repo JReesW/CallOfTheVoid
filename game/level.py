@@ -20,6 +20,45 @@ def generate_level_surface(spritesheet: SpriteSheet, tilemap: list[list[str]]) -
     return surface
 
 
+def generate_blocks(tilemap: list[list[str]], solid: list[str]) -> list[pygame.Rect]:
+    """
+    Generate collision blocks for clusters of solid tiles
+    """
+    width, height = len(tilemap[0]), len(tilemap)
+    rects = []
+    visited = set()
+
+    for y in range(height):
+        for x in range(width):
+            if tilemap[y][x] in solid and (x, y) not in visited:
+                # Find max width
+                max_width = 0
+                while x + max_width < width and tilemap[y][x + max_width] in solid and (x + max_width, y) not in visited:
+                    max_width += 1
+
+                # Find max height
+                max_height = 1
+                done = False
+
+                while not done and y + max_height < height:
+                    for dx in range(max_width):
+                        if (tilemap[y + max_height][x + dx] not in solid or (x + dx, y + max_height) in visited):
+                            done = True
+                            break
+                    if not done:
+                        max_height += 1
+
+                # Mark visited
+                for dy in range(max_height):
+                    for dx in range(max_width):
+                        visited.add((x + dx, y + dy))
+
+                # Save rectangle (convert to world coords)
+                rects.append(pygame.Rect(x * 48, y * 48, max_width * 48, max_height * 48 - 12))
+
+    return rects   
+
+
 class Level:
     """
     Object representing everything about a level
@@ -28,8 +67,9 @@ class Level:
     def __init__(self, sheet: str, tilemap: list[list[str]], solid: list[str]):
         self.spritesheet = SpriteSheet(sheet)
         self.tilemap = tilemap
-        self.surface = generate_level_surface(self.spritesheet, tilemap)
+        self.surface = generate_level_surface(self.spritesheet, self.tilemap)
         self.solid = solid
+        self.blocks = generate_blocks(self.tilemap, self.solid)
     
     def redraw(self):
         self.surface = generate_level_surface(self.spritesheet, self.tilemap)
@@ -44,6 +84,7 @@ def load_level(name: str) -> Level:
         with open(file_path) as f:
             level_info = json.load(f)
     else:
+        # Default level template
         level_info = {
             "spritesheet": "cave",
             "tilemap": [

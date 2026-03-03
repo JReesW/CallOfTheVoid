@@ -29,6 +29,8 @@ while running:
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_q and (event.mod & pygame.KMOD_CTRL)):
             pygame.quit()
             sys.exit()
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_BACKQUOTE:
+            debug.disable() if debug.is_active() else debug.enable()
 
     # Call the necessary scene functions of the active scene
     director.scene.handle_events(events)
