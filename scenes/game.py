@@ -1,7 +1,6 @@
 import pygame
 from engine.scene import Scene
 from engine import colors, director
-#from scenes.editor import EditorScene
 from game.block import Block
 from game.player import Player
 from game.gate import Gate
@@ -30,11 +29,10 @@ class GameScene(Scene):
         self.buttons.append(Button(size=(50, 50), position=(600, 550), gates=[self.gates[0]]))
     
     def handle_events(self, events):
-        #keys = pygame.key.get_pressed()
+        keys = pygame.key.get_pressed()
 
-        # if keys[pygame.K_LCTRL] and keys[pygame.K_LSHIFT] and keys[pygame.K_s]:
-        #     director.change_scene(EditorScene)
-        #     return
+        if keys[pygame.K_LCTRL] and keys[pygame.K_LSHIFT] and keys[pygame.K_s]:
+            director.change_scene("EditorScene")
         
         self.player.handle_events(events)
 
