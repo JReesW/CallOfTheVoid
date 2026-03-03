@@ -1,3 +1,0 @@
-this is here so that git recognizes this folder's existence
-
-spritesheets (one .png and one .json) go here

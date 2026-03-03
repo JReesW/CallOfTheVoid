@@ -1,1 +1,1 @@
-pyinstaller --onefile --add-data "resources;resources" --name "LLP Game" --icon=resources/images/solo_avatar_transparent.png main.py
+pyinstaller --onefile --add-data "resources;resources" --clean --name "LLP Game" --icon=resources/images/solo_avatar_transparent.png main.py

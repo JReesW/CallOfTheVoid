@@ -3,7 +3,6 @@ from pathlib import Path
 import pygame
 
 from engine import debug, director, postprocessing
-from scenes.game import GameScene
 
 pygame.init()
 pygame.freetype.init()
@@ -33,7 +32,8 @@ FPS = 60
 clock = pygame.time.Clock()
 running = True
 
-director.change_scene(GameScene)
+director.find_scenes()
+director.change_scene("EditorScene")
 director._set_scene()
 
 while running:
@@ -47,6 +47,8 @@ while running:
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_q and (event.mod & pygame.KMOD_CTRL)):
             pygame.quit()
             sys.exit()
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_BACKQUOTE:
+            debug.disable() if debug.is_active() else debug.enable()
 
     # Call the necessary scene functions of the active scene
     director.scene.handle_events(events)
