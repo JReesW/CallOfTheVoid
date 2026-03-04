@@ -12,6 +12,8 @@ class EditorScene(Scene):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        director.post.reset()
+
         self.level = load_level("test")
 
         # Mouse info

@@ -120,17 +120,21 @@ void main() {
     vec2 uv = vec2(v_uv.x, 1.0 - v_uv.y);
 
     vec3 color = texture(s_texture, uv).rgb;
+    
+    if (color.r > 0.99 && color.g > 0.99 && color.b > 0.99) {
+        f_color = vec4(1.0, 1.0, 1.0, 1.0);
+    } else {
+        color *= pow(SQRT2, u_exposure);
 
-    color *= pow(SQRT2, u_exposure);
+        vec3 hsv = RGB_to_HSV(color);
 
-    vec3 hsv = RGB_to_HSV(color);
+        hsv.x += u_hue;
+        hsv.y *= u_saturation;
+        hsv.z *= u_value;
 
-    hsv.x += u_hue;
-    hsv.y *= u_saturation;
-    hsv.z *= u_value;
+        color = HSV_to_RGB(hsv);
 
-    color = HSV_to_RGB(hsv);
-
-    // RGB -> BGR for pygame surface
-    f_color = vec4(color.bgr, 1.0);
+        // RGB -> BGR for pygame surface
+        f_color = vec4(color.bgr, 1.0);
+    }
 }
