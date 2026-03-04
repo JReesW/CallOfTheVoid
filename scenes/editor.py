@@ -44,28 +44,45 @@ class EditorScene(Scene):
         # Some pregenerated images
         self.images: dict[str, pygame.Surface] = {}
         self.generate_images()
+
+        # More editor tools
+        self.selecting_start = False
+        self.selecting_end = False
+        self.start_selector = pygame.Rect(300, 400, 120, 120)
+        self.end_selector = pygame.Rect(300, 560, 120, 120)
     
     def handle_events(self, events):
         self.mouse = mouse.mousepos()
 
         for event in events:
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LSHIFT:
+                if event.key == pygame.K_LSHIFT and not (self.selecting_start or self.selecting_end):
                     self.selecting_tiles = True
                 elif event.key == pygame.K_s and (event.mod & pygame.KMOD_CTRL):
                     self.save_level()
                 elif event.key == pygame.K_p and (event.mod & pygame.KMOD_CTRL):
                     self.play_level()
+                elif event.key == pygame.K_ESCAPE and (self.selecting_start or self.selecting_end):
+                    self.selecting_start = False
+                    self.selecting_end = False
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_LSHIFT:
                     self.selecting_tiles = False    
             elif event.type == pygame.MOUSEWHEEL:
                 self.tiles_index = (self.tiles_index - event.y) % len(self.tiles)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    self.mousedown = 1
-                elif event.button == 3:
-                    self.mousedown = 3
+                if self.selecting_tiles:
+                    if self.start_selector.collidepoint(self.mouse):
+                        self.selecting_start = True
+                        self.selecting_tiles = False
+                    elif self.end_selector.collidepoint(self.mouse):
+                        self.selecting_end = True
+                        self.selecting_tiles = False
+                else:
+                    if event.button == 1:
+                        self.mousedown = 1
+                    elif event.button == 3:
+                        self.mousedown = 3
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button in {1, 3}:
                     self.mousedown = 0
@@ -77,14 +94,25 @@ class EditorScene(Scene):
         self.highlighted = (x, y)
 
         if self.mousedown != 0 and not self.selecting_tiles:
-            if self.highlighted != self.last_highlighted:
-                self.last_highlighted = self.highlighted
-                x, y = self.highlighted
-                if self.level.tilemap[y][x] != (self.tiles[self.tiles_index] if self.mousedown == 1 else ""):
-                    self.changes_made = True
-                self.level.tilemap[y][x] = self.tiles[self.tiles_index] if self.mousedown == 1 else ""
+            if not self.selecting_start and not self.selecting_end:
+                if self.highlighted != self.last_highlighted:
+                    self.last_highlighted = self.highlighted
+                    x, y = self.highlighted
+                    if self.level.tilemap[y][x] != (self.tiles[self.tiles_index] if self.mousedown == 1 else ""):
+                        self.changes_made = True
+                    self.level.tilemap[y][x] = self.tiles[self.tiles_index] if self.mousedown == 1 else ""
+                    self.level.redraw()
+            else:
+                if self.selecting_start:
+                    self.level.start = self.highlighted
+                    self.selecting_start = False
+                elif self.selecting_end:
+                    self.level.end = self.highlighted
+                    self.selecting_end = False
+                self.mousedown = 0
+                self.changes_made = True
                 self.level.redraw()
-        
+
         if self.changes_warning > 0:
             self.changes_warning -= 1
 
@@ -93,8 +121,10 @@ class EditorScene(Scene):
 
         surface.blit(self.level.surface, (0, 0))
         
+        # Tile highlighter
         x, y = self.highlighted
-        pygame.draw.rect(surface, colors.red, (x*48, y*48 - 12, 48, 48), 2)
+        hl_color = colors.lime if self.selecting_start or self.selecting_end else colors.red
+        pygame.draw.rect(surface, hl_color, (x*48, y*48 - 12, 48, 48), 2)
 
         # Tile selector
         if self.selecting_tiles:
@@ -106,6 +136,19 @@ class EditorScene(Scene):
             surface.blit(self.tiles_gray[(self.tiles_index-1) % len(self.tiles)], pygame.Rect(920, 300, 80, 80))
             pygame.draw.rect(surface, colors.lime, pygame.Rect(920, 700, 80, 80), 2)
             surface.blit(self.tiles_gray[(self.tiles_index+1) % len(self.tiles)], pygame.Rect(920, 700, 80, 80))
+
+            # Start/end selectors
+            pygame.draw.rect(surface, colors.yellow, self.start_selector, 2)
+            surface.blit(self.images["start"], self.images["start"].get_rect().move_to(center=self.start_selector.center))
+            pygame.draw.rect(surface, colors.yellow, self.end_selector, 2)
+            surface.blit(self.images["end"], self.images["end"].get_rect().move_to(center=self.end_selector.center))
+        
+        if self.selecting_start or self.selecting_end:
+            x, y = self.mouse
+            x = (x // 48) - 1
+            y = ((y + 12) // 48) - 1
+            x, y = x * 48, y * 48 - 12
+            surface.blit(self.images["tp_door"], pygame.Rect(x, y, 144, 144))
 
         # Show unsaved level warning
         if self.changes_warning > 0:
@@ -126,6 +169,12 @@ class EditorScene(Scene):
         msg_surf.blit(surf, rect)
         self.images["unsaved"] = msg_surf
 
+        # Start/End setting
+        self.images["start"], _ = text.render("S", colors.lime, "Arial", 120, True)
+        self.images["end"],   _ = text.render("E", colors.lime, "Arial", 120, True)
+        self.images["tp_door"] = self.level.spritesheet.get_sprite("DOOR").copy()
+        self.images["tp_door"].set_alpha(60)
+
     def save_level(self):
         """
         Save the level to resources/levels/test.json
@@ -133,7 +182,9 @@ class EditorScene(Scene):
         level = {
             "spritesheet": "cave",
             "tilemap": self.level.tilemap,
-            "solid": self.level.solid
+            "solid": self.level.solid,
+            "start": self.level.start,
+            "end": self.level.end
         }
         with open(get_path(f"resources/levels/test.json"), 'w') as f:
             json.dump(level, f)
