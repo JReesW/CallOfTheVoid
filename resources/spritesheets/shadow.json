@@ -1,0 +1,34 @@
+{
+    "usesColorKey": false,
+    "colorKey": "black",
+    "flipAll": true,
+    "sprites": {
+        "idle": [0, 0, 48, 96],
+        "run_0": [48, 0, 48, 96],
+        "run_1": [96, 0, 48, 96],
+        "jump": [144, 0, 48, 96],
+        "fall": [192, 0, 48, 96]
+    },
+    "animations": {
+        "idle": {
+            "frames": ["idle"],
+            "frameDurations": [1000],
+            "loops": false
+        },
+        "run": {
+            "frames": ["run_0", "run_1"],
+            "frameDurations": [200, 200],
+            "loops": true
+        },
+        "jump": {
+            "frames": ["jump"],
+            "frameDurations": [1000],
+            "loops": false
+        },
+        "fall": {
+            "frames": ["fall"],
+            "frameDurations": [1000],
+            "loops": false
+        }
+    }
+}

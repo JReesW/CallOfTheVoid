@@ -25,6 +25,8 @@ post = postprocessing.PostProcessing(
     SCREEN_SIZE,
     str((Path.cwd() / "resources" / "shaders" / "postprocessing.glsl").absolute())
 )
+director.post = post
+
 # Comment this screen overwrite when disable post-processing
 screen = pygame.Surface(SCREEN_SIZE)
 

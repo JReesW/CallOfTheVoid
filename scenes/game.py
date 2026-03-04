@@ -16,6 +16,10 @@ class GameScene(Scene):
         self.show_blocks = False
 
         self.player = Player(self.level.start)
+        self.shadow = Player(self.level.start, shadow=True)
+        self.frozen = False
+        self.frozen_overlay = pygame.Surface((1920, 1080), pygame.SRCALPHA)
+        self.frozen_overlay.fill((150, 150, 150))
 
         self.gates = []
         # self.gates.append(Gate(size=(100, 200), position=(800, 400), buttonCount=2))
@@ -31,20 +35,28 @@ class GameScene(Scene):
                     director.change_scene("EditorScene")
                 if event.key == pygame.K_h and (event.mod & pygame.KMOD_CTRL):
                     self.show_blocks = not self.show_blocks
+                if event.key == pygame.K_LSHIFT:
+                    self.freeze_time()
         
-        self.player.handle_events(events)
+        if not self.frozen:
+            self.player.handle_events(events)
+        else:
+            self.shadow.handle_events(events)
 
     def update(self, dt):
-        self.player.update(dt, self.level.blocks + [gate.rect for gate in self.gates if not gate.open])
+        if not self.frozen:
+            self.player.update(dt, self.level.blocks + [gate.rect for gate in self.gates if not gate.open])
 
-        for button in self.buttons:
-            button.collide([self.player])
-        
-        for gate in self.gates:
-            gate.update(dt)
+            for button in self.buttons:
+                button.collide([self.player])
+            
+            for gate in self.gates:
+                gate.update(dt)
+        else:
+            self.shadow.update(dt, self.level.blocks + [gate.rect for gate in self.gates if not gate.open])
 
     def render(self, surface):
-        surface.fill(colors.black)
+        surface.fill(colors.steel_blue)
 
         surface.blit(self.level.surface, (0, 0))
         
@@ -56,6 +68,23 @@ class GameScene(Scene):
         
         self.player.render(surface)
 
+        if self.frozen:
+            self.shadow.render(surface)
+
         if self.show_blocks:
             for block in self.level.blocks:
                 pygame.draw.rect(surface, colors.red, block, 2)
+    
+    def freeze_time(self):
+        """
+        Swap between freezing and unfreezing time
+        """
+        self.frozen = not self.frozen
+        director.post.saturation = 0 if self.frozen else 1
+        director.post.value = 0.5 if self.frozen else 1
+
+        if self.frozen:
+            self.shadow.rect = self.player.rect.copy()
+            self.shadow.velocity = self.player.velocity.copy()
+            self.shadow.grounded = self.player.grounded
+            self.shadow.looking_left = self.player.looking_left
