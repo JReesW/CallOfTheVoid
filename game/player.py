@@ -4,11 +4,11 @@ from engine import colors, debug
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, start: tuple[int, int], *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.image = pygame.Surface((50, 50))
         self.image.fill(colors.red)
-        self.rect = pygame.Rect(500, 500, 50, 50)
+        self.rect = pygame.Rect(start[0] * 48, start[1] * 48, 50, 50)
 
         self.speed = 5
         self.jump_force = 12

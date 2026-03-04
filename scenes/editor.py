@@ -21,7 +21,7 @@ class EditorScene(Scene):
         self.last_highlighted = None
 
         # Tile picker stuff
-        self.tiles = list(self.level.spritesheet.sprites.keys())
+        self.tiles = [tile for tile in self.level.spritesheet.sprites.keys() if tile in self.level.solid]
         self.tiles_gray = [
             image.recolor(pygame.transform.scale(self.level.spritesheet.get_sprite(sprite), (80, 80)), colors.gray)
             for sprite in self.tiles
@@ -76,7 +76,7 @@ class EditorScene(Scene):
         y = (y + 12) // 48
         self.highlighted = (x, y)
 
-        if self.mousedown != 0:
+        if self.mousedown != 0 and not self.selecting_tiles:
             if self.highlighted != self.last_highlighted:
                 self.last_highlighted = self.highlighted
                 x, y = self.highlighted

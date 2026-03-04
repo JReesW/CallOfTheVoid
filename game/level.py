@@ -64,15 +64,27 @@ class Level:
     Object representing everything about a level
     """
 
-    def __init__(self, sheet: str, tilemap: list[list[str]], solid: list[str]):
+    def __init__(self, sheet: str, tilemap: list[list[str]], solid: list[str], start: tuple[int, int], end: tuple[int, int]):
         self.spritesheet = SpriteSheet(sheet)
         self.tilemap = tilemap
         self.surface = generate_level_surface(self.spritesheet, self.tilemap)
         self.solid = solid
         self.blocks = generate_blocks(self.tilemap, self.solid)
+        self.start = start
+        self.end = end
+        self.place_doors()
     
     def redraw(self):
         self.surface = generate_level_surface(self.spritesheet, self.tilemap)
+        self.place_doors()
+    
+    def place_doors(self):
+        for x, y in [self.start, self.end]:
+            left = (x-1) * 48
+            top = (y-1) * 48 - 12
+            w, h = 144, 144
+            self.surface.fill((0, 0, 0, 0), pygame.Rect(left, top, w, h))
+            self.surface.blit(self.spritesheet.get_sprite("DOOR"), (left, top))
 
 
 def load_level(name: str) -> Level:
@@ -92,9 +104,10 @@ def load_level(name: str) -> Level:
                 *([["MR", *([""] * 38), "ML"]] * 21),
                 ["CBL", *(["T"] * 38), "CBR"]
             ],
-            "solid": ["TL", "T", "TR", "ML", "M", "MR", "BL", "B", "BR", "CTL", "CTR", "CBL", "CBR"]
+            "solid": ["TL", "T", "TR", "ML", "M", "MR", "BL", "B", "BR", "CTL", "CTR", "CBL", "CBR"],
+            "start": [5, 22],
+            "end": [34, 22]
         }
-        print(level_info)
     
-    level = Level(level_info["spritesheet"], level_info["tilemap"], level_info["solid"])
+    level = Level(level_info["spritesheet"], level_info["tilemap"], level_info["solid"], level_info["start"], level_info["end"])
     return level

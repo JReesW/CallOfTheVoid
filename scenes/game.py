@@ -15,7 +15,7 @@ class GameScene(Scene):
         self.allow_edit = "allow_edit" in kwargs and kwargs["allow_edit"]
         self.show_blocks = False
 
-        self.player = Player()
+        self.player = Player(self.level.start)
 
         self.gates = []
         # self.gates.append(Gate(size=(100, 200), position=(800, 400), buttonCount=2))
