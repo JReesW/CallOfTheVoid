@@ -6,10 +6,18 @@ out vec4 f_color;
 
 uniform sampler2D s_texture;
 
+uniform vec2 u_resolution;
+uniform float u_time;
+
+// Color grading
 uniform float u_exposure;
 uniform float u_hue;
 uniform float u_saturation;
 uniform float u_value;
+
+// Shockwave animation
+uniform vec2 u_shockwave_pos;
+uniform float u_shockwave_start;
 
 
 /******************************************************
@@ -111,6 +119,50 @@ vec3 RGB_to_HSV(vec3 RGB) {
 
 /******************************************************
 
+                      Animations
+
+ ******************************************************/
+
+/*
+    Render shockwave animation.
+
+    @param p UV coords
+    @param r UV coords with respect to aspect ratio
+    @param origin Origin of the shockwave with respect to aspect ratio
+    @param t Current time of the animation
+*/
+vec3 shockwave(sampler2D tex, vec2 p, vec2 r, vec2 origin, float t) {
+    float wave_thickness = 0.1;
+    float wave_exp = 0.8;
+    float wave_m = 10.0;
+
+    float dist = distance(r, origin);
+    vec3 color = texture(tex, p).rgb;
+
+    if (
+        (dist <= t + wave_thickness) &&
+        (dist >= t - wave_thickness)
+    ) {
+        float off = dist - t;
+        float scale = (1.0 - pow(abs(off * wave_m), wave_exp));
+        off *= scale;
+
+        vec2 dir = normalize(r - origin);
+        float s = (t * dist * 40.0);
+
+        p += ((dir * off) / s);
+        color = texture(tex, p).rgb;
+
+        // TODO: Use HSV conversion to boost the effect
+        color += (color * scale) / s;
+    }
+
+    return color;
+}
+
+
+/******************************************************
+
                          Main
 
  ******************************************************/
@@ -118,18 +170,38 @@ vec3 RGB_to_HSV(vec3 RGB) {
 void main() {
     // Flip Y for pygame
     vec2 uv = vec2(v_uv.x, 1.0 - v_uv.y);
+    vec2 aspect = vec2(u_resolution.x / u_resolution.y, 1.0);
+    vec2 uvx = uv * aspect;
 
-    vec3 color = texture(s_texture, uv).rgb;
+    vec3 color = vec3(0.0);
 
-    color *= pow(SQRT2, u_exposure);
+    // Shockwave animation
+    if (u_shockwave_start > 0.0) {
+        vec2 shock_pos = u_shockwave_pos / u_resolution * aspect;
+        color = shockwave(
+            s_texture,
+            uv,
+            uvx,
+            shock_pos,
+            u_time - u_shockwave_start
+        );
+    }
+    else {
+        color = texture(s_texture, uv).rgb;
+    }
 
-    vec3 hsv = RGB_to_HSV(color);
+    // Color grading
+    {
+        color *= pow(SQRT2, u_exposure);
 
-    hsv.x += u_hue;
-    hsv.y *= u_saturation;
-    hsv.z *= u_value;
+        vec3 hsv = RGB_to_HSV(color);
 
-    color = HSV_to_RGB(hsv);
+        hsv.x += u_hue;
+        hsv.y *= u_saturation;
+        hsv.z *= u_value;
+
+        color = HSV_to_RGB(hsv);
+    }
 
     // RGB -> BGR for pygame surface
     f_color = vec4(color.bgr, 1.0);
