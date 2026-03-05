@@ -38,10 +38,12 @@ director.find_scenes()
 director.change_scene("EditorScene")
 director._set_scene()
 
+surface = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+
 while running:
     dt = clock.tick(FPS)
 
-    surface = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+    surface.fill((0, 0, 0, 0))
 
     events = pygame.event.get()
 

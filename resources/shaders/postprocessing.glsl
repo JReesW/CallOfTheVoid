@@ -190,6 +190,12 @@ void main() {
         color = texture(s_texture, uv).rgb;
     }
 
+    // Keep the white totally white (to highlight the shadow)
+    vec3 color2 = texture(s_texture, uv).rgb;
+    if (color2.r > 0.99 && color2.g > 0.99 && color2.b > 0.99) {
+        f_color = vec4(1.0, 1.0, 1.0, 1.0);
+    } else 
+
     // Color grading
     {
         color *= pow(SQRT2, u_exposure);
@@ -201,8 +207,9 @@ void main() {
         hsv.z *= u_value;
 
         color = HSV_to_RGB(hsv);
-    }
 
-    // RGB -> BGR for pygame surface
-    f_color = vec4(color.bgr, 1.0);
+        // RGB -> BGR for pygame surface
+        f_color = vec4(color.bgr, 1.0);
+    }
+    
 }
