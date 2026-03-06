@@ -15,8 +15,8 @@ class GameScene(Scene):
         self.allow_edit = "allow_edit" in kwargs and kwargs["allow_edit"]
         self.show_blocks = False
 
-        self.player = Player(self.level.start)
-        self.shadow = Player(self.level.start, shadow=True)
+        self.player = Player(self.level)
+        self.shadow = Player(self.level, shadow=True)
         self.frozen = False
         self.frozen_overlay = pygame.Surface((1920, 1080), pygame.SRCALPHA)
         self.frozen_overlay.fill((150, 150, 150))
@@ -45,7 +45,7 @@ class GameScene(Scene):
 
     def update(self, dt):
         if not self.frozen:
-            self.player.update(dt, self.level.blocks + [gate.rect for gate in self.gates if not gate.open])
+            self.player.update(dt)
 
             for button in self.buttons:
                 button.collide([self.player])
@@ -53,7 +53,7 @@ class GameScene(Scene):
             for gate in self.gates:
                 gate.update(dt)
         else:
-            self.shadow.update(dt, self.level.blocks + [gate.rect for gate in self.gates if not gate.open])
+            self.shadow.update(dt)
 
     def render(self, surface):
         surface.fill(colors.steel_blue)
@@ -72,8 +72,11 @@ class GameScene(Scene):
             self.shadow.render(surface)
 
         if self.show_blocks:
+            pygame.draw.rect(surface, colors.blue, self.shadow.rect if self.frozen else self.player.rect, 2)
             for block in self.level.blocks:
                 pygame.draw.rect(surface, colors.red, block, 2)
+            for l_block in self.level.ladder_blocks:
+                pygame.draw.rect(surface, colors.yellow, l_block, 2)
     
     def freeze_time(self):
         """

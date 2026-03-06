@@ -7,7 +7,9 @@
         "run_0": [48, 0, 48, 96],
         "run_1": [96, 0, 48, 96],
         "jump": [144, 0, 48, 96],
-        "fall": [192, 0, 48, 96]
+        "fall": [192, 0, 48, 96],
+        "climb_0": [240, 0, 48, 96],
+        "climb_1": [288, 0, 48, 96]
     },
     "animations": {
         "idle": {
@@ -28,6 +30,16 @@
         "fall": {
             "frames": ["fall"],
             "frameDurations": [1000],
+            "loops": false
+        },
+        "climb": {
+            "frames": ["climb_0", "climb_1"],
+            "frameDurations": [200, 200],
+            "loops": true
+        },
+        "climb_idle": {
+            "frames": ["climb_0"],
+            "frameDurations": [200],
             "loops": false
         }
     }

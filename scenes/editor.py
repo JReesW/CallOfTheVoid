@@ -186,7 +186,8 @@ class EditorScene(Scene):
             "tilemap": self.level.tilemap,
             "solid": self.level.solid,
             "start": self.level.start,
-            "end": self.level.end
+            "end": self.level.end,
+            "ladders": self.level.ladders
         }
         with open(get_path(f"resources/levels/test.json"), 'w') as f:
             json.dump(level, f)
