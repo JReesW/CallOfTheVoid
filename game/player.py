@@ -2,7 +2,7 @@ import pygame
 import math
 
 
-from engine import colors, debug, spritesheet, animation
+from engine import colors, debug, spritesheet, animation, director
 from game.level import Level
 
 
@@ -53,6 +53,9 @@ class Player(pygame.sprite.Sprite):
                     self.velocity.y = -self.jump_force
                     self.grounded = False
                     self.climbing = False
+                if event.key == pygame.K_e and self.grounded and not self.climbing:
+                    self.grab_box()
+
 
     def update(self, dt: float, blocks: list[pygame.Rect]):
         if not self.grounded and not self.climbing:
@@ -105,3 +108,15 @@ class Player(pygame.sprite.Sprite):
     
     def on_ladder(self) -> bool:
         return self.rect.collidelist(self.level.ladder_blocks) != -1
+
+    def grab_box(self):
+        grab_block = pygame.Rect(0, 0, 32, 32)
+        grab_block.bottom = self.rect.bottom - 12
+        if self.looking_left:
+            grab_block.right = self.rect.left - 8
+        else:
+            grab_block.left = self.rect.right + 8
+        boxes = director.scene.boxes
+        for box in boxes:
+            if grab_block.colliderect(box):
+                print("PICKUP")

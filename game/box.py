@@ -21,11 +21,12 @@ class Box(pygame.sprite.Sprite):
         self.held = False
     
     def update(self, dt: float, blocks: list[pygame.Rect]):
-        if not self.grounded and not self.held:
-            self.velocity.y -= self.gravity * (1/60)
-        elif not self.held:
-            self.velocity.y = 1
-        self.move_and_collide(self.velocity.x, self.velocity.y, blocks)
+        if not self.held:
+            if not self.grounded:
+                self.velocity.y -= self.gravity * (1/60)
+            else:
+                self.velocity.y = 1
+            self.move_and_collide(self.velocity.x, self.velocity.y, blocks)
 
     def move_and_collide(self, dx: float, dy: float, blocks: list[pygame.Rect]):
         # Horizontal
