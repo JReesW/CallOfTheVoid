@@ -4,3 +4,6 @@ ffmpeg -i player_16x16.png -vf "scale=480:480:flags=neighbor,lutrgb=r='if(eq(val
 # resize 160x160 spritesheet to 480x480 using nearest neighbor
 ffmpeg -i player_16x16.png -vf "scale=480:480:flags=neighbor" player.png
 
+
+ffmpeg -i ladder_16x16.png -vf "scale=48:48:flags=neighbor" ladder.png
+

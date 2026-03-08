@@ -19,19 +19,13 @@ class EditorScene(Scene):
         # Mouse info
         self.mouse = (0, 0)
         self.mousedown = 0
-        self.highlighted = (0, 0)
+        self.highlighted = (0, 0, 0)
         self.last_highlighted = None
 
         # Tile picker stuff
         self.tiles = [tile for tile in self.level.spritesheet.sprites.keys() if tile in self.level.solid]
-        self.tiles_gray = [
-            image.recolor(pygame.transform.scale(self.level.spritesheet.get_sprite(sprite), (80, 80)), colors.gray)
-            for sprite in self.tiles
-        ]
-        self.tiles_large = [
-            pygame.transform.scale(self.level.spritesheet.get_sprite(sprite), (120, 120))
-            for sprite in self.tiles
-        ]
+        self.tiles_gray = [image.recolor(pygame.transform.scale(self.level.spritesheet.get_sprite(sprite), (80, 80)), colors.gray) for sprite in self.tiles]
+        self.tiles_large = [pygame.transform.scale(self.level.spritesheet.get_sprite(sprite), (120, 120)) for sprite in self.tiles]
         self.tiles_index = 0
         self.selecting_tiles = False
 
@@ -52,6 +46,17 @@ class EditorScene(Scene):
         self.selecting_end = False
         self.start_selector = pygame.Rect(300, 400, 120, 120)
         self.end_selector = pygame.Rect(300, 560, 120, 120)
+        
+        # Tiles/Elements tabs
+        self.selecting_elements = False
+        self.tiles_tab = pygame.Rect(689, 100, 270, 55)
+        self.elements_tab = pygame.Rect(960, 100, 270, 55)
+
+        # Elements picker
+        self.elements = ["ladder"]
+        self.elements_index = 0
+        self.elements_gray = [image.recolor(pygame.transform.scale(image.load_image(element), (80, 80)), colors.gray) for element in self.elements]
+        self.elements_large = [pygame.transform.scale(image.load_image(element), (120, 120)) for element in self.elements]
     
     def handle_events(self, events):
         self.mouse = mouse.mousepos()
@@ -80,6 +85,10 @@ class EditorScene(Scene):
                     elif self.end_selector.collidepoint(self.mouse):
                         self.selecting_end = True
                         self.selecting_tiles = False
+                    elif self.tiles_tab.collidepoint(self.mouse):
+                        self.selecting_elements = False
+                    elif self.elements_tab.collidepoint(self.mouse):
+                        self.selecting_elements = True
                 else:
                     if event.button == 1:
                         self.mousedown = 1
@@ -93,23 +102,26 @@ class EditorScene(Scene):
         x, y = self.mouse
         x = x // 48
         y = (y + 12) // 48
-        self.highlighted = (x, y)
+        self.highlighted = (x, y, self.mousedown)
 
         if self.mousedown != 0 and not self.selecting_tiles:
             if not self.selecting_start and not self.selecting_end:
                 if self.highlighted != self.last_highlighted:
                     self.last_highlighted = self.highlighted
-                    x, y = self.highlighted
-                    if self.level.tilemap[y][x] != (self.tiles[self.tiles_index] if self.mousedown == 1 else ""):
-                        self.changes_made = True
-                    self.level.tilemap[y][x] = self.tiles[self.tiles_index] if self.mousedown == 1 else ""
+                    x, y, m = self.highlighted
+                    if self.selecting_elements:
+                        self.place_element(x, y, m)
+                    else:
+                        if self.level.tilemap[y][x] != (self.tiles[self.tiles_index] if self.mousedown == 1 else ""):
+                            self.changes_made = True
+                        self.level.tilemap[y][x] = self.tiles[self.tiles_index] if self.mousedown == 1 else ""
                     self.level.redraw()
             else:
                 if self.selecting_start:
-                    self.level.start = self.highlighted
+                    self.level.start = self.highlighted[:2]
                     self.selecting_start = False
                 elif self.selecting_end:
-                    self.level.end = self.highlighted
+                    self.level.end = self.highlighted[:2]
                     self.selecting_end = False
                 self.mousedown = 0
                 self.changes_made = True
@@ -124,7 +136,7 @@ class EditorScene(Scene):
         surface.blit(self.level.surface, (0, 0))
         
         # Tile highlighter
-        x, y = self.highlighted
+        x, y, _ = self.highlighted
         hl_color = colors.lime if self.selecting_start or self.selecting_end else colors.red
         pygame.draw.rect(surface, hl_color, (x*48, y*48 - 12, 48, 48), 2)
 
@@ -132,18 +144,26 @@ class EditorScene(Scene):
         if self.selecting_tiles:
             surface.blit(self.veil, (0, 0))
 
-            pygame.draw.rect(surface, colors.lime, pygame.Rect(900, 480, 120, 120), 2)
-            surface.blit(self.tiles_large[self.tiles_index], pygame.Rect(900, 480, 120, 120))
-            pygame.draw.rect(surface, colors.lime, pygame.Rect(920, 300, 80, 80), 2)
-            surface.blit(self.tiles_gray[(self.tiles_index-1) % len(self.tiles)], pygame.Rect(920, 300, 80, 80))
-            pygame.draw.rect(surface, colors.lime, pygame.Rect(920, 700, 80, 80), 2)
-            surface.blit(self.tiles_gray[(self.tiles_index+1) % len(self.tiles)], pygame.Rect(920, 700, 80, 80))
+            # Selector "wheel"
+            large, gray, index, color, group = (self.elements_large, self.elements_gray, self.elements_index, colors.blue_violet, self.elements) \
+                if self.selecting_elements else \
+                (self.tiles_large, self.tiles_gray, self.tiles_index, colors.lime, self.tiles)
+            pygame.draw.rect(surface, color, pygame.Rect(900, 480, 120, 120), 2)
+            surface.blit(large[index], pygame.Rect(900, 480, 120, 120))
+            pygame.draw.rect(surface, color, pygame.Rect(920, 300, 80, 80), 2)
+            surface.blit(gray[(index-1) % len(group)], pygame.Rect(920, 300, 80, 80))
+            pygame.draw.rect(surface, color, pygame.Rect(920, 700, 80, 80), 2)
+            surface.blit(gray[(index+1) % len(group)], pygame.Rect(920, 700, 80, 80))
 
             # Start/end selectors
             pygame.draw.rect(surface, colors.yellow, self.start_selector, 2)
             surface.blit(self.images["start"], self.images["start"].get_rect().move_to(center=self.start_selector.center))
             pygame.draw.rect(surface, colors.yellow, self.end_selector, 2)
             surface.blit(self.images["end"], self.images["end"].get_rect().move_to(center=self.end_selector.center))
+
+            # Tiles/elements selectors
+            surface.blit(self.images["tiles_dark" if self.selecting_elements else "tiles"], self.tiles_tab)
+            surface.blit(self.images["elements" if self.selecting_elements else "elements_dark"], self.elements_tab)
         
         if self.selecting_start or self.selecting_end:
             x, y = self.mouse
@@ -176,6 +196,36 @@ class EditorScene(Scene):
         self.images["end"],   _ = text.render("E", colors.lime, "Arial", 120, True)
         self.images["tp_door"] = self.level.spritesheet.get_sprite("DOOR").copy()
         self.images["tp_door"].set_alpha(60)
+
+        # Tiles/Elements selectors
+        def tiles_elements(title, dark):
+            color = colors.alter(colors.lime if title == "Tiles" else colors.blue_violet, 0.6 if dark else 1)
+            color2 = colors.alter(colors.lime if title == "Tiles" else colors.blue_violet, 0.3 if dark else 0.5)
+            surf, rect = text.render(title, color, "Arial", 48)
+            _surf = pygame.Surface((270, 55), pygame.SRCALPHA)
+            lr, rr = (8, -1) if title == "Tiles" else (-1, 8)
+            pygame.draw.rect(_surf, color2, _surf.get_rect(), border_top_left_radius=lr, border_bottom_left_radius=lr, border_top_right_radius=rr, border_bottom_right_radius=rr)
+            pygame.draw.rect(_surf, color, _surf.get_rect(), 3, border_top_left_radius=lr, border_bottom_left_radius=lr, border_top_right_radius=rr, border_bottom_right_radius=rr)
+            rect.center = _surf.get_rect().center
+            _surf.blit(surf, rect)
+            return _surf
+        
+        self.images["tiles"] = tiles_elements("Tiles", False)
+        self.images["tiles_dark"] = tiles_elements("Tiles", True)
+        self.images["elements"] = tiles_elements("Elements", False)
+        self.images["elements_dark"] = tiles_elements("Elements", True)
+
+    def place_element(self, x, y, m):
+        """
+        Place the currently selected element at the given position
+        """
+        element = self.elements[self.elements_index]
+        if element == "ladder":
+            if m == 1 and [x, y] not in self.level.ladders:
+                self.level.ladders.append([x, y])
+            elif m == 3 and [x, y] in self.level.ladders:
+                self.level.ladders.remove([x, y])
+
 
     def save_level(self):
         """
