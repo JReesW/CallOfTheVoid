@@ -33,7 +33,7 @@ clock = pygame.time.Clock()
 running = True
 
 director.find_scenes()
-director.change_scene("LevelSelectScene")
+director.change_scene("StartupScene")
 director._set_scene()
 
 while running:

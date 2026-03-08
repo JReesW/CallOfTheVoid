@@ -3,10 +3,13 @@ from engine.scene import Scene
 from engine import colors, director
 from game.earlyCaveSelectPage import EarlyCaveSelectPage
 from game.middleCaveSelectPage import MiddleCaveSelectPage
+from game import saveSystem
 
 class LevelSelectScene(Scene):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        saveSystem.load_save_data()
 
         self.pages = [EarlyCaveSelectPage(), MiddleCaveSelectPage()]
         self.current_page = 0

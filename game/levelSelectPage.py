@@ -1,6 +1,7 @@
 import pygame
 import pygame.freetype
 from game.levelNode import LevelNode
+from game import saveSystem
 from engine import colors
 
 class LevelSelectPage:
@@ -39,9 +40,11 @@ class LevelSelectPage:
                         continue
                     self.selected_node = nextNode
                 elif event.key == pygame.K_RETURN:
-                    nextNode = min(self.selected_node + 1, len(self.nodes) - 1)
-                    self.nodes[nextNode].unlocked = True
-                    self.nodes[self.selected_node].completed = True
+                    saveSystem.saveData["levelCleared"] += 1
+                    saveSystem.save_save_data(saveSystem.saveData)
+                elif event.key == pygame.K_BACKSPACE:
+                    saveSystem.saveData["levelCleared"] = max(0, saveSystem.saveData["levelCleared"] - 1)
+                    saveSystem.save_save_data(saveSystem.saveData)
     
     def should_switch_page(self):
         if self.selected_node < 0:

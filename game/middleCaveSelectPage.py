@@ -6,9 +6,9 @@ from engine import colors
 class MiddleCaveSelectPage(LevelSelectPage):
     def __init__(self):
         nodes = [
-            LevelNode("Middle Cave 1", "middlecave1", True, False, (200, 500)),
-            LevelNode("Middle Cave 2", "middlecave2", False, False, (700, 800)),
-            LevelNode("Middle Cave 3", "middlecave3", False, False, (1600, 800))
+            LevelNode("Middle Cave 1", "middlecave1", 4, (200, 500)),
+            LevelNode("Middle Cave 2", "middlecave2", 5, (700, 800)),
+            LevelNode("Middle Cave 3", "middlecave3", 6, (1600, 800))
         ]
         super().__init__(nodes)
     

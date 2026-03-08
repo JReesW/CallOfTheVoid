@@ -6,9 +6,9 @@ from engine import colors
 class EarlyCaveSelectPage(LevelSelectPage):
     def __init__(self):
         nodes = [
-            LevelNode("Cave 1", "cave1", True, True, (100, 200)),
-            LevelNode("Cave 2", "cave2", True, False, (300, 800)),
-            LevelNode("Cave 3", "cave3", False, False, (500, 500))
+            LevelNode("Cave 1", "cave1", 1, (100, 200)),
+            LevelNode("Cave 2", "cave2", 2, (300, 800)),
+            LevelNode("Cave 3", "cave3", 3, (500, 500))
         ]
         super().__init__(nodes)
     
