@@ -4,7 +4,8 @@ from engine import colors, director
 from game.player import Player
 from game.gate import Gate
 from game.button import Button
-from game.level import load_level
+from game.level import load_level, Level
+from game.box import Box
 
 
 class GameScene(Scene):
@@ -27,6 +28,8 @@ class GameScene(Scene):
         self.buttons = []
         # self.buttons.append(Button(size=(50, 50), position=(425, 550), gates=[self.gates[0]]))
         # self.buttons.append(Button(size=(50, 50), position=(600, 550), gates=[self.gates[0]]))
+
+        self.boxes = [Box(self.level, start) for start in self.level.boxes]
     
     def handle_events(self, events):
         for event in events:
@@ -44,16 +47,21 @@ class GameScene(Scene):
             self.shadow.handle_events(events)
 
     def update(self, dt):
+        blocks = self.level.blocks + [b.rect for b in self.boxes]
         if not self.frozen:
-            self.player.update(dt)
+            self.player.update(dt, blocks)
 
             for button in self.buttons:
                 button.collide([self.player])
             
             for gate in self.gates:
                 gate.update(dt)
+            
+            for box in sorted(self.boxes, key=lambda b: b.rect.top):
+                blocks = self.level.blocks + [b.rect for b in self.boxes if b is not box]
+                box.update(dt, blocks)
         else:
-            self.shadow.update(dt)
+            self.shadow.update(dt, blocks)
 
     def render(self, surface):
         surface.fill(colors.steel_blue)
@@ -65,18 +73,24 @@ class GameScene(Scene):
         
         for button in self.buttons:
             button.render(surface)
+
+        for box in self.boxes:
+            surface.blit(box.image, box.rect)        
         
         self.player.render(surface)
 
         if self.frozen:
             self.shadow.render(surface)
 
+        # Hitbox debug mode (Ctrl + H)
         if self.show_blocks:
             pygame.draw.rect(surface, colors.blue, self.shadow.rect if self.frozen else self.player.rect, 2)
             for block in self.level.blocks:
                 pygame.draw.rect(surface, colors.red, block, 2)
             for l_block in self.level.ladder_blocks:
                 pygame.draw.rect(surface, colors.yellow, l_block, 2)
+            for box in self.boxes:
+                pygame.draw.rect(surface, colors.cyan, box.rect, 2)
     
     def freeze_time(self):
         """

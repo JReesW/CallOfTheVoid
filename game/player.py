@@ -17,10 +17,10 @@ class Player(pygame.sprite.Sprite):
         self.animation_handler.play("idle")
         self.image = self.animation_handler.get_frame()
 
-        self.rect = pygame.FRect(level.start[0] * 48, level.start[1] * 48, 48, 96)
+        self.rect = pygame.FRect(level.start[0] * 48, (level.start[1] - 1) * 48, 48, 96)
 
         self.speed = 5
-        self.jump_force = 12
+        self.jump_force = 12.3
         self.gravity = -15
 
         self.velocity = pygame.math.Vector2(0, 0)
@@ -54,12 +54,9 @@ class Player(pygame.sprite.Sprite):
                     self.grounded = False
                     self.climbing = False
 
-    def update(self, dt: float):
-        blocks = self.level.blocks
-
-        dt_s = dt / 1000  # delta time in seconds
+    def update(self, dt: float, blocks: list[pygame.Rect]):
         if not self.grounded and not self.climbing:
-            self.velocity.y -= self.gravity * dt_s
+            self.velocity.y -= self.gravity * (1/60)
         elif not self.climbing:
             self.velocity.y = 1
         self.move_and_collide(self.velocity.x, self.velocity.y, blocks)

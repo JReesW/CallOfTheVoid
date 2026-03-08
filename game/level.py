@@ -12,14 +12,16 @@ class Level:
     Object representing everything about a level
     """
 
-    def __init__(self, level_info):
+    def __init__(self, level_info, editing: bool = False):
         self.spritesheet = SpriteSheet(level_info["spritesheet"])
         self.tilemap = level_info["tilemap"]
         self.solid = level_info["solid"]
         self.start = level_info["start"]
         self.end = level_info["end"]
         self.ladders = level_info["ladders"]
+        self.boxes = level_info["boxes"]
 
+        self.editing = editing
         self.surface = self.generate_level_surface()
         self.blocks = self.generate_blocks()
         self.ladder_blocks = self.generate_ladder_blocks()
@@ -33,6 +35,10 @@ class Level:
 
         for x, y in self.ladders:
             surface.blit(image.load_image("ladder"), (x * 48, y * 48 - 12))
+        
+        if self.editing:
+            for x, y in self.boxes:
+                surface.blit(image.load_image("box"), (x * 48, y * 48 - 12))
 
         for r, row in enumerate(self.tilemap):
             for c, tile in enumerate(row):
@@ -118,7 +124,7 @@ class Level:
             self.surface.blit(self.spritesheet.get_sprite("DOOR"), (left, top))
 
 
-def load_level(name: str) -> Level:
+def load_level(name: str, editing: bool = False) -> Level:
     """
     Load a level by its filename in resources/levels
     """
@@ -131,15 +137,16 @@ def load_level(name: str) -> Level:
         level_info = {
             "spritesheet": "cave",
             "tilemap": [
-                ["CTL", *(["B"] * 38), "CTR"],
+                ["CTR", *(["B"] * 38), "CTL"],
                 *([["MR", *([""] * 38), "ML"]] * 21),
-                ["CBL", *(["T"] * 38), "CBR"]
+                ["CBR", *(["T"] * 38), "CBL"]
             ],
             "solid": ["TL", "T", "TR", "ML", "M", "MR", "BL", "B", "BR", "CTL", "CTR", "CBL", "CBR"],
-            "start": [5, 22],
-            "end": [34, 22],
-            "ladders": []
+            "start": [5, 21],
+            "end": [34, 21],
+            "ladders": [],
+            "boxes": []
         }
     
-    level = Level(level_info)
+    level = Level(level_info, editing)
     return level

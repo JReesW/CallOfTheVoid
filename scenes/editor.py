@@ -14,7 +14,7 @@ class EditorScene(Scene):
 
         director.post.reset()
 
-        self.level = load_level("test")
+        self.level = load_level("test", editing=True)
 
         # Mouse info
         self.mouse = (0, 0)
@@ -53,7 +53,7 @@ class EditorScene(Scene):
         self.elements_tab = pygame.Rect(960, 100, 270, 55)
 
         # Elements picker
-        self.elements = ["ladder"]
+        self.elements = ["ladder", "box"]
         self.elements_index = 0
         self.elements_gray = [image.recolor(pygame.transform.scale(image.load_image(element), (80, 80)), colors.gray) for element in self.elements]
         self.elements_large = [pygame.transform.scale(image.load_image(element), (120, 120)) for element in self.elements]
@@ -76,7 +76,10 @@ class EditorScene(Scene):
                 if event.key == pygame.K_LSHIFT:
                     self.selecting_tiles = False    
             elif event.type == pygame.MOUSEWHEEL:
-                self.tiles_index = (self.tiles_index - event.y) % len(self.tiles)
+                if self.selecting_elements:
+                    self.elements_index = (self.elements_index - event.y) % len(self.elements)
+                else:
+                    self.tiles_index = (self.tiles_index - event.y) % len(self.tiles)
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if self.selecting_tiles:
                     if self.start_selector.collidepoint(self.mouse):
@@ -220,11 +223,14 @@ class EditorScene(Scene):
         Place the currently selected element at the given position
         """
         element = self.elements[self.elements_index]
-        if element == "ladder":
-            if m == 1 and [x, y] not in self.level.ladders:
-                self.level.ladders.append([x, y])
-            elif m == 3 and [x, y] in self.level.ladders:
-                self.level.ladders.remove([x, y])
+        container = {
+            "ladder": self.level.ladders,
+            "box": self.level.boxes
+        }[element]
+        if m == 1 and [x, y] not in container:
+            container.append([x, y])
+        elif m == 3 and [x, y] in container:
+            container.remove([x, y])
 
 
     def save_level(self):
@@ -237,7 +243,8 @@ class EditorScene(Scene):
             "solid": self.level.solid,
             "start": self.level.start,
             "end": self.level.end,
-            "ladders": self.level.ladders
+            "ladders": self.level.ladders,
+            "boxes": self.level.boxes
         }
         with open(get_path(f"resources/levels/test.json"), 'w') as f:
             json.dump(level, f)
