@@ -55,11 +55,15 @@ class Player(pygame.sprite.Sprite):
                     self.grounded = False
                     self.climbing = False
                 if event.key == pygame.K_e and self.grounded and not self.climbing:
+                    can_press = True
                     if self.grabbed is None:
                         self.grab_box()
-                    else:
+                        if self.grabbed is not None: can_press = False
+                    elif self.grabbed is not None:
                         self.drop_box()
-
+                        can_press = False
+                    if can_press:
+                        self.press_button()
 
     def update(self, dt: float, blocks: list[pygame.Rect]):
         if not self.grounded and not self.climbing:
@@ -91,6 +95,9 @@ class Player(pygame.sprite.Sprite):
         surface.blit(self.image, self.rect)
     
     def move_and_collide(self, dx: float, dy: float, blocks: list[pygame.Rect]):
+        """
+        Move the player and check for collision
+        """
         # Horizontal
         self.rect.left += dx
         for block in blocks:
@@ -116,9 +123,15 @@ class Player(pygame.sprite.Sprite):
             self.grounded = False
     
     def on_ladder(self) -> bool:
+        """
+        Return whether the player is colliding with a ladder hitbox
+        """
         return self.rect.collidelist(self.level.ladder_blocks) != -1
 
     def grab_box(self):
+        """
+        Grab a box in front of the player
+        """
         grab_block = pygame.Rect(0, 0, 32, 32)
         grab_block.bottom = self.rect.bottom - 12
         if self.looking_left:
@@ -132,9 +145,22 @@ class Player(pygame.sprite.Sprite):
                 box.held = True
 
     def drop_box(self):
+        """
+        Drop a box in front of the player, if there's space to do so
+        """
         x = self.rect.left - 24 if self.looking_left else self.rect.right + 24
         self.grabbed.rect.center = (x, self.rect.top + 24)
         if self.grabbed.rect.collidelist(self.level.blocks) == -1:
             self.grabbed.held = False
             self.grabbed.grounded = False
             self.grabbed = None
+
+    def press_button(self):
+        """
+        Press a button
+        """
+        buttons = director.scene.buttons
+        for button in buttons:
+            if self.rect.colliderect(button.rect):
+                button.toggle()
+                break

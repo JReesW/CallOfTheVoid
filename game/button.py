@@ -1,40 +1,22 @@
 import pygame
-from engine import colors
+
+from engine import colors, image
+from game.level import Level
+
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, size, position, gates = [], *args, **kwargs):
+    def __init__(self, level: Level, start: tuple[int, int], gates = [], *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.image = pygame.Surface(size)
-        self.image.fill(colors.indigo)
-        self.rect = self.image.get_rect()
-        self.rect.topleft = position
 
-        self.gates = gates
+        self.level = level
+        self.image = image.load_image("button_off")
+        self.rect = pygame.FRect(start[0] * 48, start[1] * 48 - 12, 48, 72)
 
         self.pressed = False
-
-    def update(self, dt):
-        pass
-
-    def collide(self, objects):
-        for obj in objects:
-            if self.rect.colliderect(obj.rect):
-                if self.pressed:
-                    return True
-                self.pressed = True
-
-                bottom = self.rect.bottom
-                self.rect.height /= 3
-                self.rect.bottom = bottom
-
-                self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
-                self.image.fill(colors.purple)
-
-                for gate in self.gates:
-                    gate.buttonsPressed += 1
-
-                return True
-        return False
     
     def render(self, surface):
         surface.blit(self.image, self.rect)
+    
+    def toggle(self):
+        self.pressed = not self.pressed
+        self.image = image.load_image("button_on") if self.pressed else image.load_image("button_off")

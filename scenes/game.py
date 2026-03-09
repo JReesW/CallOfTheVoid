@@ -25,9 +25,7 @@ class GameScene(Scene):
         self.gates = []
         # self.gates.append(Gate(size=(100, 200), position=(800, 400), buttonCount=2))
 
-        self.buttons = []
-        # self.buttons.append(Button(size=(50, 50), position=(425, 550), gates=[self.gates[0]]))
-        # self.buttons.append(Button(size=(50, 50), position=(600, 550), gates=[self.gates[0]]))
+        self.buttons = [Button(self.level, start, []) for start in self.level.buttons]
 
         self.boxes = [Box(self.level, start) for start in self.level.boxes]
     
@@ -50,9 +48,6 @@ class GameScene(Scene):
         blocks = self.level.blocks + [b.rect for b in self.boxes if not b.held]
         if not self.frozen:
             self.player.update(dt, blocks)
-
-            for button in self.buttons:
-                button.collide([self.player])
             
             for gate in self.gates:
                 gate.update(dt)
@@ -66,13 +61,13 @@ class GameScene(Scene):
     def render(self, surface):
         surface.fill(colors.steel_blue)
 
+        for button in self.buttons:
+            button.render(surface)
+
         surface.blit(self.level.surface, (0, 0))
         
         for gate in self.gates:
             gate.render(surface)
-        
-        for button in self.buttons:
-            button.render(surface)
 
         for box in self.boxes:
             surface.blit(box.image, box.rect)        
@@ -91,6 +86,8 @@ class GameScene(Scene):
                 pygame.draw.rect(surface, colors.yellow, l_block, 2)
             for box in self.boxes:
                 pygame.draw.rect(surface, colors.cyan, box.rect, 2)
+            for button in self.buttons:
+                pygame.draw.rect(surface, colors.alice_blue, button.rect, 2)
     
     def freeze_time(self):
         """

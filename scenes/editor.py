@@ -53,7 +53,7 @@ class EditorScene(Scene):
         self.elements_tab = pygame.Rect(960, 100, 270, 55)
 
         # Elements picker
-        self.elements = ["ladder", "box"]
+        self.elements = ["ladder", "box", "button_off"]
         self.elements_index = 0
         self.elements_gray = [image.recolor(pygame.transform.scale(image.load_image(element), (80, 80)), colors.gray) for element in self.elements]
         self.elements_large = [pygame.transform.scale(image.load_image(element), (120, 120)) for element in self.elements]
@@ -225,7 +225,8 @@ class EditorScene(Scene):
         element = self.elements[self.elements_index]
         container = {
             "ladder": self.level.ladders,
-            "box": self.level.boxes
+            "box": self.level.boxes,
+            "button_off": self.level.buttons
         }[element]
         if m == 1 and [x, y] not in container:
             container.append([x, y])
@@ -244,7 +245,8 @@ class EditorScene(Scene):
             "start": self.level.start,
             "end": self.level.end,
             "ladders": self.level.ladders,
-            "boxes": self.level.boxes
+            "boxes": self.level.boxes,
+            "buttons": self.level.buttons
         }
         with open(get_path(f"resources/levels/test.json"), 'w') as f:
             json.dump(level, f)
