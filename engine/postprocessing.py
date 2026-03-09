@@ -2,6 +2,7 @@ from typing import Any
 
 from array import array
 from time import time
+from pathlib import Path
 
 import pygame
 import moderngl
@@ -68,9 +69,32 @@ class PostProcessing:
             self._ibo
         )
 
+        overlay_shader =  str((Path.cwd() / "resources" / "shaders" / "overlay.glsl").absolute())
+
+        self._overlay_program = self._context.program(
+            vertex_shader=base_vertex_shader,
+            fragment_shader=open(overlay_shader, "r", encoding="utf-8").read()
+        )
+
+        self._overlay_vao = self._context.vertex_array(
+            self._overlay_program,
+            (
+                (self._vbo, "2f", "in_position"),
+                (self._uvbo, "2f", "in_uv")
+            ),
+            self._ibo
+        )
+
+        self._main_fbo_target = self._context.texture(resolution, 4)
+        self._main_fbo = self._context.framebuffer(color_attachments=(self._main_fbo_target,))
+
         self._texture = self._context.texture(resolution, 4)
 
         self._start_time = time()
+
+        self.overlay_surf = pygame.Surface(resolution, flags=pygame.SRCALPHA)
+        self.overlay_surf.fill((0, 0, 0, 0))
+        self._overlay_tex = self._context.texture(resolution, 4)
 
     def __getitem__(self, key: str) -> Any:
         """ Get uniform value. """
@@ -197,10 +221,19 @@ class PostProcessing:
 
         self._texture.write(surface.get_view("1"))
 
+        self._overlay_tex.write(self.overlay_surf.get_view("1"))
+        self.overlay_surf.fill((0, 0, 0, 0))
+
     def render(self) -> None:
         """ Render post-processing. """
 
         self["u_time"] = time() - self._start_time
 
+        self._main_fbo.use()
         self._texture.use(0)
         self._vao.render()
+
+        self._context.screen.use()
+        self._overlay_tex.use(0)
+        self._main_fbo_target.use(1)
+        self._overlay_vao.render()

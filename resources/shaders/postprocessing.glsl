@@ -1,4 +1,4 @@
-#version 330
+#version 420
 
 
 in vec2 v_uv;
@@ -168,8 +168,7 @@ vec3 shockwave(sampler2D tex, vec2 p, vec2 r, vec2 origin, float t) {
  ******************************************************/
 
 void main() {
-    // Flip Y for pygame
-    vec2 uv = vec2(v_uv.x, 1.0 - v_uv.y);
+    vec2 uv = v_uv;
     vec2 aspect = vec2(u_resolution.x / u_resolution.y, 1.0);
     vec2 uvx = uv * aspect;
 
@@ -208,8 +207,7 @@ void main() {
 
         color = HSV_to_RGB(hsv);
 
-        // RGB -> BGR for pygame surface
-        f_color = vec4(color.bgr, 1.0);
+        f_color = vec4(color.rgb, 1.0);
     }
     
 }
