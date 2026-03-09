@@ -32,6 +32,8 @@ class MainMenuScene(Scene):
                     if self.is_in_rect(button, self.mouse):
                         if button == self.startButton:
                             director.change_scene("LevelSelectScene")
+                        elif button == self.settingsButton:
+                            director.change_scene("SettingsScene")
                         elif button == self.quitButton:
                             pygame.quit()
                             sys.exit()

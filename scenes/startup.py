@@ -28,6 +28,8 @@ class StartupScene(Scene):
                 elif event.key == pygame.K_RETURN:
                     self.state = 0
                     self.timer = 0
+                elif event.key == pygame.K_ESCAPE:
+                    director.change_scene("MainMenuScene")
 
     def update(self, dt):
         if self.paused:

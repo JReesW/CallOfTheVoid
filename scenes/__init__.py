@@ -3,6 +3,7 @@ from scenes.game import GameScene
 from scenes.levelSelect import LevelSelectScene
 from scenes.mainMenu import MainMenuScene
 from scenes.startup import StartupScene
+from scenes.settings import SettingsScene
 
 
 scenes = [
@@ -10,5 +11,6 @@ scenes = [
     GameScene,
     LevelSelectScene,
     MainMenuScene,
-    StartupScene
+    StartupScene,
+    SettingsScene
 ]

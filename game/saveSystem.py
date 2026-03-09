@@ -3,6 +3,7 @@ from pathlib import Path
 from engine.util import get_path
 
 saveData = None
+defaultData = {"levelCleared": 0, "soundVolume": 1, "musicVolume": 1}
 
 def load_save_data() -> dict:
     global saveData
@@ -15,7 +16,7 @@ def load_save_data() -> dict:
             saveData = json.load(f)
             return saveData
     else:
-        saveData = {"levelCleared": 0}
+        saveData = defaultData
         return saveData
 
 def save_save_data(save_info: dict):
