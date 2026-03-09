@@ -28,6 +28,7 @@ class Player(pygame.sprite.Sprite):
         self.grounded = False
         self.looking_left = False
         self.climbing = False
+        self.grabbed = None
 
     def handle_events(self, events):
         keys = pygame.key.get_pressed()
@@ -38,10 +39,10 @@ class Player(pygame.sprite.Sprite):
         else:
             self.velocity.x = 0
         
-        if keys[pygame.K_w] and self.on_ladder():
+        if keys[pygame.K_w] and self.on_ladder() and self.grabbed is None:
             self.climbing = True
             self.velocity.y = -3
-        elif keys[pygame.K_s] and self.on_ladder():
+        elif keys[pygame.K_s] and self.on_ladder() and self.grabbed is None:
             self.climbing = True
             self.velocity.y = 3
         elif self.on_ladder() and self.climbing:
@@ -54,7 +55,10 @@ class Player(pygame.sprite.Sprite):
                     self.grounded = False
                     self.climbing = False
                 if event.key == pygame.K_e and self.grounded and not self.climbing:
-                    self.grab_box()
+                    if self.grabbed is None:
+                        self.grab_box()
+                    else:
+                        self.drop_box()
 
 
     def update(self, dt: float, blocks: list[pygame.Rect]):
@@ -64,6 +68,11 @@ class Player(pygame.sprite.Sprite):
             self.velocity.y = 1
         self.move_and_collide(self.velocity.x, self.velocity.y, blocks)
         if not self.on_ladder(): self.climbing = False
+
+        # Box carrying
+        if self.grabbed is not None:
+            x = self.rect.left - 8 if self.looking_left else self.rect.right + 8
+            self.grabbed.rect.center = (x, self.rect.top + 32)
 
         # Animation stuff
         if self.velocity.x < 0: self.looking_left = True
@@ -119,4 +128,13 @@ class Player(pygame.sprite.Sprite):
         boxes = director.scene.boxes
         for box in boxes:
             if grab_block.colliderect(box):
-                print("PICKUP")
+                self.grabbed = box
+                box.held = True
+
+    def drop_box(self):
+        x = self.rect.left - 24 if self.looking_left else self.rect.right + 24
+        self.grabbed.rect.center = (x, self.rect.top + 24)
+        if self.grabbed.rect.collidelist(self.level.blocks) == -1:
+            self.grabbed.held = False
+            self.grabbed.grounded = False
+            self.grabbed = None

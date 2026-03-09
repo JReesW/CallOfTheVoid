@@ -47,7 +47,7 @@ class GameScene(Scene):
             self.shadow.handle_events(events)
 
     def update(self, dt):
-        blocks = self.level.blocks + [b.rect for b in self.boxes]
+        blocks = self.level.blocks + [b.rect for b in self.boxes if not b.held]
         if not self.frozen:
             self.player.update(dt, blocks)
 
@@ -58,7 +58,7 @@ class GameScene(Scene):
                 gate.update(dt)
             
             for box in sorted(self.boxes, key=lambda b: b.rect.top):
-                blocks = self.level.blocks + [b.rect for b in self.boxes if b is not box]
+                blocks = self.level.blocks + [b.rect for b in self.boxes if b is not box and not b.held]
                 box.update(dt, blocks)
         else:
             self.shadow.update(dt, blocks)
