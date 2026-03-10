@@ -190,10 +190,10 @@ void main() {
     }
 
     // Keep the white totally white (to highlight the shadow)
-    vec3 color2 = texture(s_texture, uv).rgb;
-    if (color2.r > 0.99 && color2.g > 0.99 && color2.b > 0.99) {
-        f_color = vec4(1.0, 1.0, 1.0, 1.0);
-    } else 
+    // vec3 color2 = texture(s_texture, uv).rgb;
+    // if (color2.r > 0.99 && color2.g > 0.99 && color2.b > 0.99) {
+    //     f_color = vec4(1.0, 1.0, 1.0, 1.0);
+    // } else 
 
     // Color grading
     {

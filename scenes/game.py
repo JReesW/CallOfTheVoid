@@ -1,6 +1,6 @@
 import pygame
 from engine.scene import Scene
-from engine import colors, director
+from engine import colors, director, image
 from game.player import Player
 from game.gate import Gate
 from game.button import Button
@@ -61,8 +61,13 @@ class GameScene(Scene):
     def render(self, surface):
         surface.fill(colors.steel_blue)
 
-        for button in self.buttons.values():
-            button.render(surface)
+        if not self.frozen:
+            for button in self.buttons.values():
+                surface.blit(button.image, button.rect)
+        else:
+            for button in self.buttons.values():
+                img = image.load_image("button_shadow_on" if button.pressed else "button_shadow_off")
+                director.post.overlay_surf.blit(img, button.rect)
         
         for gate in self.gates.values():
             gate.render(surface)

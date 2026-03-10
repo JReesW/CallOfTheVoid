@@ -16,9 +16,6 @@ class Button(pygame.sprite.Sprite):
         self.pressed = False
         self.outputs = []
     
-    def render(self, surface):
-        surface.blit(self.image, self.rect)
-    
     def toggle(self):
         self.pressed = not self.pressed
         self.image = image.load_image("button_on") if self.pressed else image.load_image("button_off")
