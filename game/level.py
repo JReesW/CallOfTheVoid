@@ -21,6 +21,8 @@ class Level:
         self.ladders = level_info["ladders"]
         self.boxes = level_info["boxes"]
         self.buttons = level_info["buttons"]
+        self.gates = level_info["gates"]
+        self.links = level_info["links"]
 
         self.editing = editing
         self.surface = self.generate_level_surface()
@@ -42,6 +44,8 @@ class Level:
                 surface.blit(image.load_image("box"), (x * 48, y * 48 - 12))
             for x, y in self.buttons:
                 surface.blit(image.load_image("button_off"), (x * 48, y * 48 - 12))
+            for x, y, _, _ in self.gates:
+                surface.blit(image.load_image("gate"), (x * 48, y * 48 - 12), (0, 0, 48, 48))
 
         for r, row in enumerate(self.tilemap):
             for c, tile in enumerate(row):
@@ -115,10 +119,16 @@ class Level:
         return res
 
     def redraw(self):
+        """
+        Redraw the level's surface
+        """
         self.surface = self.generate_level_surface()
         self.place_doors()
     
     def place_doors(self):
+        """
+        Place the level entrance and exit doors
+        """
         for x, y in [self.start, self.end]:
             left = (x-1) * 48
             top = (y-1) * 48 - 12
@@ -149,7 +159,9 @@ def load_level(name: str, editing: bool = False) -> Level:
             "end": [34, 21],
             "ladders": [],
             "boxes": [],
-            "buttons": []
+            "buttons": [],
+            "gates": [],
+            "links": []
         }
     
     level = Level(level_info, editing)

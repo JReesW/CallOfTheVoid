@@ -22,10 +22,10 @@ class GameScene(Scene):
         self.frozen_overlay = pygame.Surface((1920, 1080), pygame.SRCALPHA)
         self.frozen_overlay.fill((150, 150, 150))
 
-        self.gates = []
-        # self.gates.append(Gate(size=(100, 200), position=(800, 400), buttonCount=2))
+        self.gates = {(x, y): Gate(self.level, (x, y), r, l) for x, y, r, l in self.level.gates}
 
-        self.buttons = [Button(self.level, start, []) for start in self.level.buttons]
+        self.buttons = {(x, y): Button(self.level, (x, y)) for x, y in self.level.buttons}
+        self.lay_links()
 
         self.boxes = [Box(self.level, start) for start in self.level.boxes]
     
@@ -45,15 +45,15 @@ class GameScene(Scene):
             self.shadow.handle_events(events)
 
     def update(self, dt):
-        blocks = self.level.blocks + [b.rect for b in self.boxes if not b.held]
+        blocks = self.level.blocks + [b.rect for b in self.boxes if not b.held] + [g.rect for g in self.gates.values()]
         if not self.frozen:
             self.player.update(dt, blocks)
             
-            for gate in self.gates:
-                gate.update(dt)
+            for gate in self.gates.values():
+                gate.update()
             
             for box in sorted(self.boxes, key=lambda b: b.rect.top):
-                blocks = self.level.blocks + [b.rect for b in self.boxes if b is not box and not b.held]
+                blocks = self.level.blocks + [b.rect for b in self.boxes if b is not box and not b.held] + [g.rect for g in self.gates.values()]
                 box.update(dt, blocks)
         else:
             self.shadow.update(dt, blocks)
@@ -61,13 +61,13 @@ class GameScene(Scene):
     def render(self, surface):
         surface.fill(colors.steel_blue)
 
-        for button in self.buttons:
+        for button in self.buttons.values():
             button.render(surface)
+        
+        for gate in self.gates.values():
+            gate.render(surface)
 
         surface.blit(self.level.surface, (0, 0))
-        
-        for gate in self.gates:
-            gate.render(surface)
 
         for box in self.boxes:
             surface.blit(box.image, box.rect)        
@@ -75,7 +75,7 @@ class GameScene(Scene):
         self.player.render(surface)
 
         if self.frozen:
-            self.shadow.render(surface)
+            self.shadow.render(director.post.overlay_surf)
 
         # Hitbox debug mode (Ctrl + H)
         if self.show_blocks:
@@ -86,8 +86,10 @@ class GameScene(Scene):
                 pygame.draw.rect(surface, colors.yellow, l_block, 2)
             for box in self.boxes:
                 pygame.draw.rect(surface, colors.cyan, box.rect, 2)
-            for button in self.buttons:
+            for button in self.buttons.values():
                 pygame.draw.rect(surface, colors.alice_blue, button.rect, 2)
+            for gate in self.gates.values():
+                pygame.draw.rect(surface, colors.orange, gate.rect, 2)
     
     def freeze_time(self):
         """
@@ -103,3 +105,11 @@ class GameScene(Scene):
             self.shadow.velocity = self.player.velocity.copy()
             self.shadow.grounded = self.player.grounded
             self.shadow.looking_left = self.player.looking_left
+
+    def lay_links(self):
+        """
+        Lay the links between buttons and gates
+        """
+        for x1, y1, x2, y2 in self.level.links:
+            self.buttons[(x1, y1)].outputs.append(self.gates[(x2, y2)])
+            self.gates[(x2, y2)].inputs[(x1, y1)] = False

@@ -159,7 +159,7 @@ class Player(pygame.sprite.Sprite):
         """
         Press a button
         """
-        buttons = director.scene.buttons
+        buttons = director.scene.buttons.values()
         for button in buttons:
             if self.rect.colliderect(button.rect):
                 button.toggle()

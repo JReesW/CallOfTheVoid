@@ -11,7 +11,7 @@ class Box(pygame.sprite.Sprite):
         self.level = level
         self.image = image.load_image("box")
 
-        self.rect = pygame.FRect(start[0] * 48, start[1] * 48, 48, 48)
+        self.rect = pygame.FRect(start[0] * 48, start[1] * 48 - 12, 48, 48)
 
         self.gravity = -15
 
