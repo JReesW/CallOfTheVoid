@@ -1,9 +1,12 @@
 import pygame
+
 from engine.scene import Scene
 from engine import colors, director, image
+
 from game.player import Player
 from game.gate import Gate
 from game.button import Button
+from game.plate import Plate
 from game.level import load_level, Level
 from game.box import Box
 
@@ -25,6 +28,7 @@ class GameScene(Scene):
         self.gates = {(x, y): Gate(self.level, (x, y), r, l) for x, y, r, l in self.level.gates}
 
         self.buttons = {(x, y): Button(self.level, (x, y)) for x, y in self.level.buttons}
+        self.plates = {(x, y): Plate(self.level, (x, y)) for x, y in self.level.plates}
         self.lay_links()
 
         self.boxes = [Box(self.level, start) for start in self.level.boxes]
@@ -49,11 +53,14 @@ class GameScene(Scene):
         if not self.frozen:
             self.player.update(dt, blocks)
             
+            for plate in self.plates.values():
+                plate.update()
+
             for gate in self.gates.values():
                 gate.update()
             
             for box in sorted(self.boxes, key=lambda b: b.rect.top):
-                blocks = self.level.blocks + [b.rect for b in self.boxes if b is not box and not b.held] + [g.rect for g in self.gates.values()]
+                blocks = self.level.blocks + [b.rect for b in self.boxes if b is not box and not b.held] + [g.rect for g in self.gates.values()] + [p.box_rect for p in self.plates.values()]
                 box.update(dt, blocks)
         else:
             self.shadow.update(dt, blocks)
@@ -69,6 +76,9 @@ class GameScene(Scene):
                 img = image.load_image("button_shadow_on" if button.pressed else "button_shadow_off")
                 director.post.overlay_surf.blit(img, button.rect)
         
+        for plate in self.plates.values():
+            surface.blit(plate.image, plate.rect)
+
         for gate in self.gates.values():
             gate.render(surface)
 
@@ -93,6 +103,8 @@ class GameScene(Scene):
                 pygame.draw.rect(surface, colors.cyan, box.rect, 2)
             for button in self.buttons.values():
                 pygame.draw.rect(surface, colors.alice_blue, button.rect, 2)
+            for plate in self.plates.values():
+                pygame.draw.rect(surface, colors.alice_blue, plate.rect, 2)
             for gate in self.gates.values():
                 pygame.draw.rect(surface, colors.orange, gate.rect, 2)
     
@@ -116,5 +128,8 @@ class GameScene(Scene):
         Lay the links between buttons and gates
         """
         for x1, y1, x2, y2 in self.level.links:
-            self.buttons[(x1, y1)].outputs.append(self.gates[(x2, y2)])
+            if (x1, y1) in self.buttons:
+                self.buttons[(x1, y1)].outputs.append(self.gates[(x2, y2)])
+            else:
+                self.plates[(x1, y1)].outputs.append(self.gates[(x2, y2)])
             self.gates[(x2, y2)].inputs[(x1, y1)] = False

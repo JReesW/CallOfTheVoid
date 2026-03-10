@@ -53,7 +53,7 @@ class EditorScene(Scene):
         self.elements_tab = pygame.Rect(960, 100, 270, 55)
 
         # Elements picker
-        self.elements = ["ladder", "box", "button_off", "gate"]
+        self.elements = ["ladder", "box", "button_off", "plate_off", "gate"]
         self.elements_index = 0
         self.elements_gray = [image.recolor(pygame.transform.scale(image.load_image(element), (80, 80)), colors.gray) for element in self.elements]
         self.elements_large = [pygame.transform.scale(image.load_image(element), (120, 120)) for element in self.elements]
@@ -155,7 +155,7 @@ class EditorScene(Scene):
             self.changes_warning -= 1
 
     def render(self, surface):
-        surface.fill(colors.grey)
+        surface.fill(colors.dark_gray)
 
         surface.blit(self.level.surface, (0, 0))
 
@@ -228,7 +228,7 @@ class EditorScene(Scene):
         
         # Laying links
         if self.selecting_links == 1:
-            for button in self.level.buttons:
+            for button in [*self.level.buttons, *self.level.plates]:
                 x = button[0] * 48
                 y = button[1] * 48 - 12
                 pygame.draw.rect(surface, colors.cyan, (x, y, 48, 48), 2)
@@ -300,7 +300,8 @@ class EditorScene(Scene):
             container = {
                 "ladder": self.level.ladders,
                 "box": self.level.boxes,
-                "button_off": self.level.buttons
+                "button_off": self.level.buttons,
+                "plate_off": self.level.plates
             }[element]
             if m == 1 and [x, y] not in container:
                 container.append([x, y])
@@ -325,6 +326,7 @@ class EditorScene(Scene):
             "boxes": self.level.boxes,
             "buttons": self.level.buttons,
             "gates": self.level.gates,
+            "plates": self.level.plates,
             "links": self.level.links
         }
         with open(get_path(f"resources/levels/test.json"), 'w') as f:
@@ -371,7 +373,7 @@ class EditorScene(Scene):
         Handle laying links between buttons and gates
         """
         if self.selecting_links == 1:
-            for button in self.level.buttons:
+            for button in [*self.level.buttons, *self.level.plates]:
                 x = button[0] * 48
                 y = button[1] * 48 - 12
                 if pygame.Rect(x, y, 48, 48).collidepoint(self.mouse):
@@ -384,12 +386,13 @@ class EditorScene(Scene):
                 if pygame.Rect(x, y, 48, 48).collidepoint(self.mouse):
                     self.level.links.append([*self.start_link, gate[0], gate[1]])
                     self.selecting_links = 0
+                    self.changes_made = True
 
     def check_link_removal(self, element, x, y):
         """
         Check whether to remove a link once one of its elements has been removed
         """
-        if element in ["button_off"]:
+        if element in ["button_off", "plate_off"]:
             self.level.links = [[a, b, c, d] for a, b, c, d in self.level.links if (a, b) != (x, y)]
         elif element == "gate":
             self.level.links = [[a, b, c, d] for a, b, c, d in self.level.links if (c, d) != (x, y)]

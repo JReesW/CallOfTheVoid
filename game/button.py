@@ -1,6 +1,6 @@
 import pygame
 
-from engine import colors, image
+from engine import image
 from game.level import Level
 
 

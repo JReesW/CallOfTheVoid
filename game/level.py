@@ -22,6 +22,7 @@ class Level:
         self.boxes = level_info["boxes"]
         self.buttons = level_info["buttons"]
         self.gates = level_info["gates"]
+        self.plates = level_info["plates"]
         self.links = level_info["links"]
 
         self.editing = editing
@@ -46,6 +47,8 @@ class Level:
                 surface.blit(image.load_image("button_off"), (x * 48, y * 48 - 12))
             for x, y, _, _ in self.gates:
                 surface.blit(image.load_image("gate"), (x * 48, y * 48 - 12), (0, 0, 48, 48))
+            for x, y in self.plates:
+                surface.blit(image.load_image("plate_off"), (x * 48, y * 48))
 
         for r, row in enumerate(self.tilemap):
             for c, tile in enumerate(row):
@@ -161,6 +164,7 @@ def load_level(name: str, editing: bool = False) -> Level:
             "boxes": [],
             "buttons": [],
             "gates": [],
+            "plates": [],
             "links": []
         }
     
