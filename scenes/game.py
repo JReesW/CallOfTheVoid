@@ -140,6 +140,7 @@ class GameScene(Scene):
                 self.player.velocity = self.shadow.velocity.copy()
                 self.player.grounded = self.shadow.grounded
                 self.player.looking_left = self.shadow.looking_left
+                self.shadow.leaving_mark = False
             elif self.level.world == 3:
                 if self.shadow.looking_up:
                     self.shadow.leaving_mark = False
