@@ -31,6 +31,7 @@ class Player(pygame.sprite.Sprite):
         self.grabbed = None
         self.looking_up = False
         self.looking_down = False
+        self.leaving_mark = False
 
     def handle_events(self, events):
         keys = pygame.key.get_pressed()

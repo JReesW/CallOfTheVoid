@@ -9,6 +9,7 @@ from game.button import Button
 from game.plate import Plate
 from game.level import load_level, Level
 from game.box import Box
+from game.smoke import SmokeSystem
 
 
 class GameScene(Scene):
@@ -18,12 +19,13 @@ class GameScene(Scene):
         self.level = load_level("test")
         self.allow_edit = "allow_edit" in kwargs and kwargs["allow_edit"]
         self.show_blocks = False
+        self.ticks = 0
 
         self.player = Player(self.level)
         self.shadow = Player(self.level, shadow=True)
         self.frozen = False
-        self.frozen_overlay = pygame.Surface((1920, 1080), pygame.SRCALPHA)
-        self.frozen_overlay.fill((150, 150, 150))
+        self.veil = pygame.Surface(self.shadow.rect.size, pygame.SRCALPHA)
+        self.veil.fill((0, 0, 0, 80))
 
         self.gates = {(x, y): Gate(self.level, (x, y), r, l) for x, y, r, l in self.level.gates}
 
@@ -32,6 +34,8 @@ class GameScene(Scene):
         self.lay_links()
 
         self.boxes = [Box(self.level, start) for start in self.level.boxes]
+
+        self.smoke = SmokeSystem()
     
     def handle_events(self, events):
         for event in events:
@@ -49,6 +53,8 @@ class GameScene(Scene):
             self.shadow.handle_events(events)
 
     def update(self, dt):
+        self.ticks += 1
+
         blocks = self.level.blocks + [b.rect for b in self.boxes if not b.held] + [g.rect for g in self.gates.values()]
         if not self.frozen:
             self.player.update(dt, blocks)
@@ -62,6 +68,9 @@ class GameScene(Scene):
             for box in sorted(self.boxes, key=lambda b: b.rect.top):
                 blocks = self.level.blocks + [b.rect for b in self.boxes if b is not box and not b.held] + [g.rect for g in self.gates.values()] + [p.box_rect for p in self.plates.values()]
                 box.update(dt, blocks)
+            
+            if self.shadow.leaving_mark and self.ticks % 10 == 0:
+                self.smoke.emit((self.shadow.rect.centerx, self.shadow.rect.bottom), 1)
         else:
             self.shadow.update(dt, blocks)
 
@@ -91,6 +100,8 @@ class GameScene(Scene):
 
         if self.frozen:
             self.shadow.render(director.post.overlay_surf)
+        elif self.shadow.leaving_mark:
+            self.smoke.update_draw(surface, 1/60)
 
         # Hitbox debug mode (Ctrl + H)
         if self.show_blocks:
@@ -117,11 +128,24 @@ class GameScene(Scene):
         director.post.value = 0.5 if self.frozen else 1
 
         if self.frozen:
-            self.shadow.rect = self.player.rect.copy()
-            self.shadow.velocity = self.player.velocity.copy()
-            self.shadow.grounded = self.player.grounded
-            self.shadow.looking_left = self.player.looking_left
+            if self.level.world < 3 or not self.shadow.leaving_mark:
+                self.shadow.rect = self.player.rect.copy()
+                self.shadow.velocity = self.player.velocity.copy()
+                self.shadow.grounded = self.player.grounded
+                self.shadow.looking_left = self.player.looking_left
             director.post.play_shockwave_anim(pygame.Vector2(self.shadow.rect.center))
+        else:
+            if self.level.world > 1 and self.shadow.looking_down:
+                self.player.rect = self.shadow.rect.copy()
+                self.player.velocity = self.shadow.velocity.copy()
+                self.player.grounded = self.shadow.grounded
+                self.player.looking_left = self.shadow.looking_left
+            elif self.level.world == 3:
+                if self.shadow.looking_up:
+                    self.shadow.leaving_mark = False
+                else:
+                    self.shadow.leaving_mark = True
+            self.smoke.particles.clear()
 
     def lay_links(self):
         """
