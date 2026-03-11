@@ -105,15 +105,6 @@ class Player(pygame.sprite.Sprite):
         """
         Move the player and check for collision
         """
-        # Horizontal
-        self.rect.left += dx
-        for block in blocks:
-            if self.rect.colliderect(block):
-                if dx > 0:
-                    self.rect.right = block.left
-                elif dx < 0:
-                    self.rect.left = block.right
-
         # Vertical
         self.rect.top += dy
         collided_with_floor = False
@@ -128,6 +119,15 @@ class Player(pygame.sprite.Sprite):
                     self.velocity.y = 0
         if not collided_with_floor and dy > 0:
             self.grounded = False
+
+        # Horizontal
+        self.rect.left += dx
+        for block in blocks:
+            if self.rect.colliderect(block):
+                if dx > 0:
+                    self.rect.right = block.left
+                elif dx < 0:
+                    self.rect.left = block.right
     
     def on_ladder(self) -> bool:
         """

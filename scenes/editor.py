@@ -4,6 +4,7 @@ import json
 from engine.scene import Scene
 from engine import colors, director, image, text, mouse, maths
 from engine.util import get_path
+from engine.maths import clamp
 
 from game.level import load_level
 
@@ -124,8 +125,8 @@ class EditorScene(Scene):
 
     def update(self, dt):
         x, y = self.mouse
-        x = x // 48
-        y = (y + 12) // 48
+        x = clamp(x // 48, 0, 39)
+        y = clamp((y + 12) // 48, 0, 22)
         self.highlighted = (x, y, self.mousedown)
 
         if self.mousedown != 0 and not self.selecting_tiles:

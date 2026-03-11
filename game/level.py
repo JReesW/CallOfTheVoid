@@ -93,7 +93,7 @@ class Level:
                             visited.add((x + dx, y + dy))
 
                     # Save rectangle (convert to world coords)
-                    rects.append(pygame.Rect(x * 48, y * 48, max_width * 48, max_height * 48 - 12))
+                    rects.append(pygame.Rect(x * 48 + 8, y * 48, max_width * 48 - 16, max_height * 48 - 12))
 
         return rects
     
@@ -156,7 +156,7 @@ def load_level(name: str, editing: bool = False) -> Level:
             "world": 1,
             "tilemap": [
                 ["CTR", *(["B"] * 38), "CTL"],
-                *([["MR", *([""] * 38), "ML"]] * 21),
+                *[["MR", *([""] * 38), "ML"] for _ in range(21)],
                 ["CBR", *(["T"] * 38), "CBL"]
             ],
             "solid": ["TL", "T", "TR", "ML", "M", "MR", "BL", "B", "BR", "CTL", "CTR", "CBL", "CBR"],
