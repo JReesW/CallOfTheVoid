@@ -11,7 +11,8 @@
         "climb_0": [240, 0, 48, 96],
         "climb_1": [288, 0, 48, 96],
         "look_up": [336, 0, 48, 96],
-        "look_down": [384, 0, 48, 96]
+        "look_down": [384, 0, 48, 96],
+        "dead": [432, 0, 48, 96]
     },
     "animations": {
         "idle": {
@@ -51,6 +52,11 @@
         },
         "look_down": {
             "frames": ["look_down"],
+            "frameDurations": [200],
+            "loops": false
+        },
+        "dead": {
+            "frames": ["dead"],
             "frameDurations": [200],
             "loops": false
         }

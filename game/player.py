@@ -32,6 +32,7 @@ class Player(pygame.sprite.Sprite):
         self.looking_up = False
         self.looking_down = False
         self.leaving_mark = False
+        self.dead = False
 
     def handle_events(self, events):
         keys = pygame.key.get_pressed()
@@ -87,7 +88,8 @@ class Player(pygame.sprite.Sprite):
         # Animation stuff
         if self.velocity.x < 0: self.looking_left = True
         if self.velocity.x > 0: self.looking_left = False
-        if self.climbing and self.velocity.y != 0: self.animation_handler.play("climb")
+        if self.dead: self.animation_handler.play("dead")
+        elif self.climbing and self.velocity.y != 0: self.animation_handler.play("climb")
         elif self.climbing: self.animation_handler.play("climb_idle")
         elif self.velocity.x != 0 and self.grounded: self.animation_handler.play("run", flip=self.looking_left)
         elif self.looking_up and self.grounded: self.animation_handler.play("look_up", flip=self.looking_left)

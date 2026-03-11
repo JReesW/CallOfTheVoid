@@ -13,10 +13,11 @@ from game.smoke import SmokeSystem
 
 
 class GameScene(Scene):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, level: str = "test", *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.level = load_level("test")
+        self.level_name = level
+        self.level = load_level(level)
         self.allow_edit = "allow_edit" in kwargs and kwargs["allow_edit"]
         self.show_blocks = False
         self.ticks = 0
@@ -46,6 +47,8 @@ class GameScene(Scene):
                     self.show_blocks = not self.show_blocks
                 if event.key == pygame.K_LSHIFT:
                     self.freeze_time()
+                if event.key == pygame.K_r:
+                    self.restart()
         
         if not self.frozen:
             self.player.handle_events(events)
@@ -58,6 +61,8 @@ class GameScene(Scene):
         blocks = self.level.blocks + [b.rect for b in self.boxes if not b.held] + [g.rect for g in self.gates.values()]
         if not self.frozen:
             self.player.update(dt, blocks)
+            if self.player.rect.top > 1080:
+                self.restart()
             
             for plate in self.plates.values():
                 plate.update()
@@ -158,3 +163,9 @@ class GameScene(Scene):
             else:
                 self.plates[(x1, y1)].outputs.append(self.gates[(x2, y2)])
             self.gates[(x2, y2)].inputs[(x1, y1)] = False
+    
+    def restart(self):
+        """
+        Restart the level
+        """
+        director.change_scene("Fadeout", self, GameScene(self.level_name))
