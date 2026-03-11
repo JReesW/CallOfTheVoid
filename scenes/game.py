@@ -21,6 +21,12 @@ class GameScene(Scene):
         self.allow_edit = "allow_edit" in kwargs and kwargs["allow_edit"]
         self.show_blocks = False
         self.ticks = 0
+        if "keep_music" not in kwargs:
+            self.music_timestamp = 0
+            director.audio.play_music(f"world{self.level.world}")
+        else:
+            self.music_timestamp = kwargs["keep_music"]
+        [director.audio.load_sound(sound) for sound in ["freeze", "unfreeze", "jump"]]
 
         self.player = Player(self.level)
         self.shadow = Player(self.level, shadow=True)
@@ -137,6 +143,14 @@ class GameScene(Scene):
         self.frozen = not self.frozen
         director.post.saturation = 0 if self.frozen else 1
         director.post.value = 0.5 if self.frozen else 1
+        track = f"world{self.level.world}{'-alt' if self.frozen else ''}"
+        self.music_timestamp += pygame.mixer.music.get_pos()/1000
+        try:
+            director.audio.play_music(track, start=self.music_timestamp)
+        except NotImplementedError:
+            self.music_timestamp = 0
+            director.audio.play_music(track, start=0)
+        director.audio.play_sound("freeze" if self.frozen else "unfreeze")
 
         if self.frozen:
             if self.level.world < 3 or not self.shadow.leaving_mark or self.shadow.dead:
@@ -175,4 +189,4 @@ class GameScene(Scene):
         """
         Restart the level
         """
-        director.change_scene("Fadeout", self, GameScene(self.level_name))
+        director.change_scene("Fadeout", self, GameScene(self.level_name, keep_music=self.music_timestamp))

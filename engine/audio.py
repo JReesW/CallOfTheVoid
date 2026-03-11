@@ -15,7 +15,7 @@ class AudioHandler:
         self.music_muted = False
         
         # SFX settings
-        self.sfx_volume = 0.8
+        self.sfx_volume = 0.5
         self.sfx_muted = False
         
         # Cache for loaded sounds
@@ -23,7 +23,7 @@ class AudioHandler:
 
     # Music
 
-    def play_music(self, name, loops=-1, fade_ms=1000):
+    def play_music(self, name, loops=-1, start=0, fade_ms=1000):
         """
         Play background music.
         loops=-1 means infinite.
@@ -32,7 +32,7 @@ class AudioHandler:
         pygame.mixer.music.set_volume(
             0 if self.music_muted else self.music_volume
         )
-        pygame.mixer.music.play(loops=loops, fade_ms=fade_ms)
+        pygame.mixer.music.play(loops=loops, start=start, fade_ms=fade_ms)
 
     def stop_music(self, fade_ms=500):
         pygame.mixer.music.fadeout(fade_ms)

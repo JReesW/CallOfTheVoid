@@ -1,3 +1,0 @@
-this is here so that git recognizes this folder's existence
-
-sound files (preferably mp3) go here

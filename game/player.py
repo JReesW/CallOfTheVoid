@@ -61,6 +61,7 @@ class Player(pygame.sprite.Sprite):
                     self.velocity.y = -self.jump_force
                     self.grounded = False
                     self.climbing = False
+                    director.audio.play_sound("jump")
                 if event.key == pygame.K_e and self.grounded and not self.climbing:
                     can_press = True
                     if self.grabbed is None and not self.shadow:
