@@ -30,6 +30,8 @@ class Fadeout(Scene):
         elif self.time_passed < self.t2 and not self.black:
             self.veil.fill((0, 0, 0, 255))
             self.black = True
+            director.post.saturation = 1
+            director.post.value = 1
         elif self.time_passed < self.t3:
             alpha = clamp(int(pygame.math.remap(self.t2, self.t3, 255, 0, self.time_passed)), 0, 255)
             debug.debug("alpha", alpha)

@@ -60,8 +60,8 @@ class GameScene(Scene):
 
         blocks = self.level.blocks + [b.rect for b in self.boxes if not b.held] + [g.rect for g in self.gates.values()]
         if not self.frozen:
-            self.player.update(dt, blocks)
-            if self.player.rect.top > 1080:
+            self.player.update(dt, blocks, self.level.death_blocks)
+            if self.player.rect.top > 1080 or self.player.dead:
                 self.restart()
             
             for plate in self.plates.values():
@@ -74,13 +74,19 @@ class GameScene(Scene):
                 blocks = self.level.blocks + [b.rect for b in self.boxes if b is not box and not b.held] + [g.rect for g in self.gates.values()] + [p.box_rect for p in self.plates.values()]
                 box.update(dt, blocks)
             
-            if self.shadow.leaving_mark and self.ticks % 10 == 0:
+            if self.shadow.leaving_mark and self.ticks % 10 == 0 and not self.shadow.dead:
                 self.smoke.emit((self.shadow.rect.centerx, self.shadow.rect.bottom), 1)
         else:
-            self.shadow.update(dt, blocks)
+            self.shadow.update(dt, blocks, self.level.death_blocks)
+            if self.shadow.rect.top > 1280:
+                self.shadow.dead = True
+                self.shadow.leaving_mark = False
+                self.freeze_time()
 
     def render(self, surface):
         surface.fill(colors.steel_blue)
+
+        surface.blit(self.level.background)
 
         if not self.frozen:
             for button in self.buttons.values():
@@ -133,7 +139,8 @@ class GameScene(Scene):
         director.post.value = 0.5 if self.frozen else 1
 
         if self.frozen:
-            if self.level.world < 3 or not self.shadow.leaving_mark:
+            if self.level.world < 3 or not self.shadow.leaving_mark or self.shadow.dead:
+                self.shadow.dead = False
                 self.shadow.rect = self.player.rect.copy()
                 self.shadow.velocity = self.player.velocity.copy()
                 self.shadow.grounded = self.player.grounded

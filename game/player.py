@@ -72,13 +72,17 @@ class Player(pygame.sprite.Sprite):
                     if can_press:
                         self.press_button()
 
-    def update(self, dt: float, blocks: list[pygame.Rect]):
-        if not self.grounded and not self.climbing:
-            self.velocity.y -= self.gravity * (1/60)
-        elif not self.climbing:
-            self.velocity.y = 1
-        self.move_and_collide(self.velocity.x, self.velocity.y, blocks)
-        if not self.on_ladder(): self.climbing = False
+    def update(self, dt: float, blocks: list[pygame.Rect], death_blocks: list[pygame.Rect]):
+        if self.rect.collidelist(death_blocks) != -1:
+            self.dead = True
+
+        if not self.dead:
+            if not self.grounded and not self.climbing:
+                self.velocity.y -= self.gravity * (1/60)
+            elif not self.climbing:
+                self.velocity.y = 1
+            self.move_and_collide(self.velocity.x, self.velocity.y, blocks)
+            if not self.on_ladder(): self.climbing = False
 
         # Box carrying
         if self.grabbed is not None:

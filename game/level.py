@@ -16,6 +16,8 @@ class Level:
         self.spritesheet = SpriteSheet(level_info["spritesheet"])
         self.tilemap = level_info["tilemap"]
         self.world = level_info["world"]
+        self.not_editable = level_info["not_editable"]
+        self.deadly = level_info["deadly"]
         self.solid = level_info["solid"]
         self.start = level_info["start"]
         self.end = level_info["end"]
@@ -28,9 +30,10 @@ class Level:
 
         self.editing = editing
         self.surface = self.generate_level_surface()
-        self.blocks = self.generate_blocks()
+        self.background = image.load_image(f"cave{self.world}bg")
+        self.blocks = self.generate_blocks(self.solid)
+        self.death_blocks = self.generate_blocks(self.deadly)
         self.ladder_blocks = self.generate_ladder_blocks()
-        self.place_doors()
 
     def generate_level_surface(self) -> pygame.Surface:
         """
@@ -57,9 +60,15 @@ class Level:
                     y = -12 + 48 * r
                     x = 48 * c
                     surface.blit(self.spritesheet.get_sprite(tile), (x, y))
+        
+        for x, y in [self.start, self.end]:
+            left = (x-1) * 48
+            top = (y-1) * 48 - 12
+            surface.blit(self.spritesheet.get_sprite("DOOR"), (left, top))
+
         return surface
 
-    def generate_blocks(self) -> list[pygame.Rect]:
+    def generate_blocks(self, pool: list[str]) -> list[pygame.Rect]:
         """
         Generate collision blocks for clusters of solid tiles
         """
@@ -69,10 +78,10 @@ class Level:
 
         for y in range(height):
             for x in range(width):
-                if self.tilemap[y][x] in self.solid and (x, y) not in visited:
+                if self.tilemap[y][x] in pool and (x, y) not in visited:
                     # Find max width
                     max_width = 0
-                    while x + max_width < width and self.tilemap[y][x + max_width] in self.solid and (x + max_width, y) not in visited:
+                    while x + max_width < width and self.tilemap[y][x + max_width] in pool and (x + max_width, y) not in visited:
                         max_width += 1
 
                     # Find max height
@@ -81,7 +90,7 @@ class Level:
 
                     while not done and y + max_height < height:
                         for dx in range(max_width):
-                            if (self.tilemap[y + max_height][x + dx] not in self.solid or (x + dx, y + max_height) in visited):
+                            if (self.tilemap[y + max_height][x + dx] not in pool or (x + dx, y + max_height) in visited):
                                 done = True
                                 break
                         if not done:
@@ -127,18 +136,6 @@ class Level:
         Redraw the level's surface
         """
         self.surface = self.generate_level_surface()
-        self.place_doors()
-    
-    def place_doors(self):
-        """
-        Place the level entrance and exit doors
-        """
-        for x, y in [self.start, self.end]:
-            left = (x-1) * 48
-            top = (y-1) * 48 - 12
-            w, h = 144, 144
-            self.surface.fill((0, 0, 0, 0), pygame.Rect(left, top, w, h))
-            self.surface.blit(self.spritesheet.get_sprite("DOOR"), (left, top))
 
 
 def load_level(name: str, editing: bool = False) -> Level:
@@ -159,6 +156,8 @@ def load_level(name: str, editing: bool = False) -> Level:
                 *[["MR", *([""] * 38), "ML"] for _ in range(21)],
                 ["CBR", *(["T"] * 38), "CBL"]
             ],
+            "not_editable": ["DOOR"],
+            "deadly": ["SPL", "SP", "SPR"],
             "solid": ["TL", "T", "TR", "ML", "M", "MR", "BL", "B", "BR", "CTL", "CTR", "CBL", "CBR"],
             "start": [5, 21],
             "end": [34, 21],

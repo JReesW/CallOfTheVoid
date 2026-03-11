@@ -24,7 +24,7 @@ class EditorScene(Scene):
         self.last_highlighted = None
 
         # Tile picker stuff
-        self.tiles = [tile for tile in self.level.spritesheet.sprites.keys() if tile in self.level.solid]
+        self.tiles = [tile for tile in self.level.spritesheet.sprites.keys() if tile not in self.level.not_editable]
         self.tiles_gray = [image.recolor(pygame.transform.scale(self.level.spritesheet.get_sprite(sprite), (80, 80)), colors.gray) for sprite in self.tiles]
         self.tiles_large = [pygame.transform.scale(self.level.spritesheet.get_sprite(sprite), (120, 120)) for sprite in self.tiles]
         self.tiles_index = 0
@@ -320,6 +320,8 @@ class EditorScene(Scene):
         level = {
             "spritesheet": "cave",
             "world": self.level.world,
+            "not_editable": self.level.not_editable,
+            "deadly": self.level.deadly,
             "tilemap": self.level.tilemap,
             "solid": self.level.solid,
             "start": self.level.start,
