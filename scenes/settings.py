@@ -4,6 +4,8 @@ from engine.scene import Scene
 from engine import colors, director, mouse
 from game import saveSystem
 
+import random
+
 class SettingsScene(Scene):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -26,6 +28,14 @@ class SettingsScene(Scene):
         self.confirmingDelete = False
 
         self.mouse = (0, 0)
+
+        self.snowPoints = []
+
+        for i in range(200):
+            x = random.randint(0, 1920)
+            y = random.randint(0, 1080)
+            downwardsForce = random.uniform(1, 5)
+            self.snowPoints.append(((x, y), downwardsForce))
 
     def is_in_rect(self, rect : pygame.Rect, pos):
         return (rect.x + rect.w > pos[0]) and (rect.x < pos[0]) and (rect.y + rect.h > pos[1]) and (rect.y < pos[1])
@@ -78,7 +88,14 @@ class SettingsScene(Scene):
                     director.change_scene("MainMenuScene")
     
     def update(self, dt):
-        return super().update(dt)
+        for i in range(len(self.snowPoints)):
+            pos, downwardsForce = self.snowPoints[i]
+            x = pos[0]
+            if x > 1920:
+                x = -5
+            if pos[1] > 1080:
+                pos = (pos[0], -5)
+            self.snowPoints[i] = ((x + 2.5, pos[1] + downwardsForce), downwardsForce)
     
     def render(self, surface):
         surface.fill(colors.royal_blue)
@@ -156,3 +173,12 @@ class SettingsScene(Scene):
 
         pygame.draw.rect(surface, colors.red, self.deleteDataRect)
         surface.blit(deleteTextSurface, deleteTextRect)
+
+        #snow
+        for i in range(len(self.snowPoints)):
+            pos, downwardsForce = self.snowPoints[i]
+            alpha = 255 - max(0, min(1, (pos[1] / 1080))) * 255
+            #colors.snow
+            color = (255, 250, 250, alpha)
+
+            pygame.draw.circle(surface, color, pos, 2)

@@ -1,28 +1,53 @@
 import pygame
 import pygame.freetype
 import sys
+import random
 from engine.scene import Scene
 from engine import colors, director, mouse
+from engine.util import get_path
 
 class MainMenuScene(Scene):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.logo = pygame.image.load(get_path(f"resources/images/lowland_palms_splash.png")).convert_alpha()
+        self.logoRect = self.logo.get_rect()
+        self.logoRect.right = 1920
+        self.logoRect.bottom = 1080
+
+        self.pyce = pygame.image.load(get_path(f"resources/images/pygamece_powered_splash.png")).convert_alpha()
+        self.pyceRect = self.pyce.get_rect()
+        self.pyceRect.left = 0
+        self.pyceRect.bottom = 1080
+
         self.buttons: list[pygame.Rect] = []
+        centerx = 1920/2
         #start, settings, credits?, quit
-        self.startButton = pygame.Rect((10, 760, 300, 70))
+        self.startButton = pygame.Rect((10, 500, 300, 70))
+        self.startButton.centerx = centerx
         self.buttons.append(self.startButton)
 
-        self.settingsButton = pygame.Rect((10, 840, 300, 70))
+        self.settingsButton = pygame.Rect((10, 580, 300, 70))
+        self.settingsButton.centerx = centerx
         self.buttons.append(self.settingsButton)
 
-        self.creditsButton = pygame.Rect((10, 920, 300, 70))
+        self.creditsButton = pygame.Rect((10, 660, 300, 70))
+        self.creditsButton.centerx = centerx
         self.buttons.append(self.creditsButton)
 
-        self.quitButton = pygame.Rect((10, 1000, 300, 70))
+        self.quitButton = pygame.Rect((10, 740, 300, 70))
+        self.quitButton.centerx = centerx
         self.buttons.append(self.quitButton)
 
         self.mouse = (0,0)
+
+        self.snowPoints = []
+
+        for i in range(200):
+            x = random.randint(0, 1920)
+            y = random.randint(0, 1080)
+            downwardsForce = random.uniform(1, 5)
+            self.snowPoints.append(((x, y), downwardsForce))
 
     def handle_events(self, events):
         self.mouse = mouse.mousepos()
@@ -39,13 +64,34 @@ class MainMenuScene(Scene):
                             sys.exit()
 
     def update(self, dt):
-        pass
+        for i in range(len(self.snowPoints)):
+            pos, downwardsForce = self.snowPoints[i]
+            x = pos[0]
+            if x > 1920:
+                x = -5
+            if pos[1] > 1080:
+                pos = (pos[0], -5)
+            self.snowPoints[i] = ((x + 2.5, pos[1] + downwardsForce), downwardsForce)
     
     def is_in_rect(self, rect : pygame.Rect, pos):
         return (rect.x + rect.w > pos[0]) and (rect.x < pos[0]) and (rect.y + rect.h > pos[1]) and (rect.y < pos[1])
 
     def render(self, surface):
         surface.fill((111, 103, 118))
+
+        font = pygame.freetype.SysFont("Arial", 60, True)
+
+        titleSurface, titleRect = font.render("Game Name", colors.ghost_white)
+        titleRect.centerx = surface.width / 2
+        titleRect.top = 300
+
+        surface.blit(titleSurface, titleRect)
+
+        #pygame.draw.rect(surface, colors.red, self.logoRect)
+
+        surface.blit(self.logo, self.logoRect)
+
+        surface.blit(self.pyce, self.pyceRect)
         
         for button in self.buttons:
             hovered = self.is_in_rect(button, self.mouse)
@@ -85,3 +131,11 @@ class MainMenuScene(Scene):
                 textRect.center = button.center
 
                 surface.blit(textSurface, textRect)
+        
+        for i in range(len(self.snowPoints)):
+            pos, downwardsForce = self.snowPoints[i]
+            alpha = 255 - max(0, min(1, (pos[1] / 1080))) * 255
+            #colors.snow
+            color = (255, 250, 250, alpha)
+
+            pygame.draw.circle(surface, color, pos, 2)
