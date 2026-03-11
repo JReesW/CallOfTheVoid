@@ -318,6 +318,7 @@ class EditorScene(Scene):
         """
         level = {
             "spritesheet": "cave",
+            "world": self.level.world,
             "tilemap": self.level.tilemap,
             "solid": self.level.solid,
             "start": self.level.start,

@@ -15,6 +15,7 @@ class Level:
     def __init__(self, level_info, editing: bool = False):
         self.spritesheet = SpriteSheet(level_info["spritesheet"])
         self.tilemap = level_info["tilemap"]
+        self.world = level_info["world"]
         self.solid = level_info["solid"]
         self.start = level_info["start"]
         self.end = level_info["end"]
@@ -152,6 +153,7 @@ def load_level(name: str, editing: bool = False) -> Level:
         # Default level template
         level_info = {
             "spritesheet": "cave",
+            "world": 1,
             "tilemap": [
                 ["CTR", *(["B"] * 38), "CTL"],
                 *([["MR", *([""] * 38), "ML"]] * 21),

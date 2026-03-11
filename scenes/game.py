@@ -117,11 +117,11 @@ class GameScene(Scene):
         director.post.value = 0.5 if self.frozen else 1
 
         if self.frozen:
-            director.post.play_shockwave_anim(pygame.Vector2(self.player.rect.center))
             self.shadow.rect = self.player.rect.copy()
             self.shadow.velocity = self.player.velocity.copy()
             self.shadow.grounded = self.player.grounded
             self.shadow.looking_left = self.player.looking_left
+            director.post.play_shockwave_anim(pygame.Vector2(self.shadow.rect.center))
 
     def lay_links(self):
         """

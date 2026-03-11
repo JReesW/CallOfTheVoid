@@ -9,7 +9,9 @@
         "jump": [144, 0, 48, 96],
         "fall": [192, 0, 48, 96],
         "climb_0": [240, 0, 48, 96],
-        "climb_1": [288, 0, 48, 96]
+        "climb_1": [288, 0, 48, 96],
+        "look_up": [336, 0, 48, 96],
+        "look_down": [384, 0, 48, 96]
     },
     "animations": {
         "idle": {
@@ -39,6 +41,16 @@
         },
         "climb_idle": {
             "frames": ["climb_0"],
+            "frameDurations": [200],
+            "loops": false
+        },
+        "look_up": {
+            "frames": ["look_up"],
+            "frameDurations": [200],
+            "loops": false
+        },
+        "look_down": {
+            "frames": ["look_down"],
             "frameDurations": [200],
             "loops": false
         }

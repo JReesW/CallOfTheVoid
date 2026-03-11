@@ -29,6 +29,8 @@ class Player(pygame.sprite.Sprite):
         self.looking_left = False
         self.climbing = False
         self.grabbed = None
+        self.looking_up = False
+        self.looking_down = False
 
     def handle_events(self, events):
         keys = pygame.key.get_pressed()
@@ -47,6 +49,9 @@ class Player(pygame.sprite.Sprite):
             self.velocity.y = 3
         elif self.on_ladder() and self.climbing:
             self.velocity.y = 0
+        
+        self.looking_up = keys[pygame.K_w] and not keys[pygame.K_s] and not self.climbing
+        self.looking_down = keys[pygame.K_s] and not keys[pygame.K_w] and not self.climbing
 
         for event in events:
             if event.type == pygame.KEYDOWN:
@@ -56,10 +61,10 @@ class Player(pygame.sprite.Sprite):
                     self.climbing = False
                 if event.key == pygame.K_e and self.grounded and not self.climbing:
                     can_press = True
-                    if self.grabbed is None:
+                    if self.grabbed is None and not self.shadow:
                         self.grab_box()
                         if self.grabbed is not None: can_press = False
-                    elif self.grabbed is not None:
+                    elif self.grabbed is not None and not self.shadow:
                         self.drop_box()
                         can_press = False
                     if can_press:
@@ -84,6 +89,8 @@ class Player(pygame.sprite.Sprite):
         if self.climbing and self.velocity.y != 0: self.animation_handler.play("climb")
         elif self.climbing: self.animation_handler.play("climb_idle")
         elif self.velocity.x != 0 and self.grounded: self.animation_handler.play("run", flip=self.looking_left)
+        elif self.looking_up and self.grounded: self.animation_handler.play("look_up", flip=self.looking_left)
+        elif self.looking_down and self.grounded: self.animation_handler.play("look_down", flip=self.looking_left)
         elif self.grounded: self.animation_handler.play("idle", flip=self.looking_left)
         elif self.velocity.y < 0: self.animation_handler.play("jump", flip=self.looking_left)
         elif self.velocity.y > 0: self.animation_handler.play("fall", flip=self.looking_left)
