@@ -1,0 +1,64 @@
+{
+    "usesColorKey": false,
+    "colorKey": "black",
+    "flipAll": true,
+    "sprites": {
+        "idle": [0, 0, 48, 96],
+        "run_0": [48, 0, 48, 96],
+        "run_1": [96, 0, 48, 96],
+        "jump": [144, 0, 48, 96],
+        "fall": [192, 0, 48, 96],
+        "climb_0": [240, 0, 48, 96],
+        "climb_1": [288, 0, 48, 96],
+        "look_up": [336, 0, 48, 96],
+        "look_down": [384, 0, 48, 96],
+        "dead": [432, 0, 48, 96]
+    },
+    "animations": {
+        "idle": {
+            "frames": ["idle"],
+            "frameDurations": [1000],
+            "loops": false
+        },
+        "run": {
+            "frames": ["run_0", "run_1"],
+            "frameDurations": [200, 200],
+            "loops": true
+        },
+        "jump": {
+            "frames": ["jump"],
+            "frameDurations": [1000],
+            "loops": false
+        },
+        "fall": {
+            "frames": ["fall"],
+            "frameDurations": [1000],
+            "loops": false
+        },
+        "climb": {
+            "frames": ["climb_0", "climb_1"],
+            "frameDurations": [200, 200],
+            "loops": true
+        },
+        "climb_idle": {
+            "frames": ["climb_0"],
+            "frameDurations": [200],
+            "loops": false
+        },
+        "look_up": {
+            "frames": ["look_up"],
+            "frameDurations": [200],
+            "loops": false
+        },
+        "look_down": {
+            "frames": ["look_down"],
+            "frameDurations": [200],
+            "loops": false
+        },
+        "dead": {
+            "frames": ["dead"],
+            "frameDurations": [200],
+            "loops": false
+        }
+    }
+}
