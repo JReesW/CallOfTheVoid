@@ -85,7 +85,9 @@ class GameScene(Scene):
             if self.shadow.leaving_mark and self.ticks % 10 == 0 and not self.shadow.dead:
                 self.smoke.emit((self.shadow.rect.centerx, self.shadow.rect.bottom), 1)
         else:
-            self.shadow.update(dt, blocks, self.level.death_blocks)
+            held_boxes = [b.rect for b in self.boxes if b.held]
+            if self.shadow.collides_with_box: blocks += held_boxes
+            self.shadow.update(dt, blocks, self.level.death_blocks, held_boxes)
             if self.shadow.rect.top > 1280:
                 self.shadow.dead = True
                 self.shadow.leaving_mark = False
@@ -155,6 +157,7 @@ class GameScene(Scene):
         director.audio.play_sound("freeze" if self.frozen else "unfreeze")
 
         if self.frozen:
+            self.shadow.collides_with_box = False
             if self.level.world < 3 or not self.shadow.leaving_mark or self.shadow.dead:
                 self.shadow.dead = False
                 self.shadow.rect = self.player.rect.copy()

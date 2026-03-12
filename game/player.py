@@ -32,6 +32,7 @@ class Player(pygame.sprite.Sprite):
         self.looking_up = False
         self.looking_down = False
         self.leaving_mark = False
+        self.collides_with_box = False
         self.dead = False
 
     def handle_events(self, events):
@@ -73,9 +74,12 @@ class Player(pygame.sprite.Sprite):
                     if can_press:
                         self.press_button()
 
-    def update(self, dt: float, blocks: list[pygame.Rect], death_blocks: list[pygame.Rect]):
+    def update(self, dt: float, blocks: list[pygame.Rect], death_blocks: list[pygame.Rect], held_boxes: list[pygame.Rect] = []):
         if self.rect.collidelist(death_blocks) != -1:
             self.dead = True
+        
+        if self.shadow and not self.collides_with_box and self.rect.collidelist(held_boxes) == -1:
+            self.collides_with_box = True
 
         if not self.dead:
             if not self.grounded and not self.climbing:
