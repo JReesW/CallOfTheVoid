@@ -79,7 +79,7 @@ class GameScene(Scene):
                 gate.update()
             
             for box in sorted(self.boxes, key=lambda b: b.rect.top):
-                blocks = self.level.blocks + [b.rect for b in self.boxes if b is not box and not b.held] + [g.rect for g in self.gates.values()] + [p.box_rect for p in self.plates.values()]
+                blocks = self.level.blocks + [b.rect for b in self.boxes if b is not box and not b.held] + [g.rect for g in self.gates.values()] + [p.box_rect for p in self.plates.values()] + self.level.death_blocks
                 box.update(dt, blocks)
             
             if self.shadow.leaving_mark and self.ticks % 10 == 0 and not self.shadow.dead:
