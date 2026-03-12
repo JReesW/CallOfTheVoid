@@ -19,7 +19,7 @@ screen = pygame.display.set_mode(
     SCALED_SIZE,
     pygame.FULLSCREEN | pygame.OPENGL | pygame.DOUBLEBUF
 )
-pygame.display.set_caption("Pygame project")
+pygame.display.set_caption("Call of the Void")
 
 post = postprocessing.PostProcessing(
     SCREEN_SIZE,

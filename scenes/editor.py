@@ -14,6 +14,7 @@ class EditorScene(Scene):
         super().__init__(*args, **kwargs)
 
         director.post.reset()
+        director.audio.stop_music()
 
         self.level = load_level("test", editing=True)
 
