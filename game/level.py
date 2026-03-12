@@ -14,6 +14,7 @@ class Level:
 
     def __init__(self, level_info, editing: bool = False):
         self.spritesheet = SpriteSheet(level_info["spritesheet"])
+        self.spritesheet_name = level_info["spritesheet"]
         self.tilemap = level_info["tilemap"]
         self.world = level_info["world"]
         self.not_editable = level_info["not_editable"]

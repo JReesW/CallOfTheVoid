@@ -318,7 +318,7 @@ class EditorScene(Scene):
         Save the level to resources/levels/test.json
         """
         level = {
-            "spritesheet": "cave",
+            "spritesheet": self.level.spritesheet_name,
             "world": self.level.world,
             "not_editable": self.level.not_editable,
             "deadly": self.level.deadly,
