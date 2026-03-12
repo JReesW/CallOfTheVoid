@@ -138,6 +138,8 @@ class GameScene(Scene):
             self.shadow.render(director.post.overlay_surf)
         elif self.shadow.leaving_mark:
             self.smoke.update_draw(surface, 1/60)
+        
+        self.show_tutorial(surface)
 
         # Hitbox debug mode (Ctrl + H)
         if self.show_blocks:
@@ -214,13 +216,13 @@ class GameScene(Scene):
         """
         Restart the level
         """
-        director.change_scene("Fadeout", self, GameScene(self.level_name, keep_music=self.music_timestamp))
+        director.change_scene("Fadeout", self, GameScene(self.level_name, keep_music=self.music_timestamp, allow_edit=self.allow_edit))
 
     def generate_title(self) -> pygame.Surface:
         """
         Generate a title for the level name, shown when starting a level
         """
-        surf, rect = text.render(self.level.name, colors.black, "Comic Sans", 48, True)
+        surf, rect = text.render(self.level.name, colors.black, "Arial", 48, True)
         title_rect = pygame.Rect(0, 0, max(rect.width + 20, 200), rect.height + 20)
         surface = pygame.Surface(title_rect.size, pygame.SRCALPHA)
         pygame.draw.rect(surface, colors.white, title_rect, border_radius=10)
@@ -228,3 +230,11 @@ class GameScene(Scene):
         rect.center = title_rect.center
         surface.blit(surf, rect)
         return surface
+
+    def show_tutorial(self, surface: pygame.Surface):
+        """
+        Show a tutorial image
+        """
+        if self.level.name == "Mind the gap":
+            surface.blit(image.load_image("tutorials/toggle_button"), (100, 100))
+            surface.blit(image.load_image("tutorials/freeze_time"), (650, 200))

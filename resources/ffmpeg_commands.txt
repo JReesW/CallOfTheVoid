@@ -6,4 +6,5 @@ ffmpeg -i player_16x16.png -vf "scale=480:480:flags=neighbor" player.png
 
 
 ffmpeg -i ladder_16x16.png -vf "scale=48:48:flags=neighbor" ladder.png
+ffmpeg -i ladder_16x16.png -vf "scale=iw*3:ih*3:flags=neighbor" ladder.png
 
