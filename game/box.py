@@ -12,6 +12,7 @@ class Box(pygame.sprite.Sprite):
         self.image = image.load_image("box")
 
         self.rect = pygame.FRect(start[0] * 48, start[1] * 48 - 12, 48, 48)
+        self.start = start
 
         self.gravity = -15
 
@@ -27,6 +28,12 @@ class Box(pygame.sprite.Sprite):
             else:
                 self.velocity.y = 1
             self.move_and_collide(self.velocity.x, self.velocity.y, blocks)
+        
+        if self.rect.top > 1280:
+            self.held = False
+            self.rect.topleft = self.start[0] * 48, self.start[1] * 48 - 12
+            self.velocity = pygame.math.Vector2(0, 0)
+            self.grounded = False
 
     def move_and_collide(self, dx: float, dy: float, blocks: list[pygame.Rect]):
         # Horizontal
