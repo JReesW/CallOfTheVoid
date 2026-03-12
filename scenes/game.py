@@ -189,6 +189,7 @@ class GameScene(Scene):
             director.post.play_shockwave_anim(pygame.Vector2(self.shadow.rect.center))
         else:
             if self.level.world > 1 and self.shadow.looking_down:
+                if self.player.grabbed is not None: self.player.drop_box(force=True)
                 self.player.rect = self.shadow.rect.copy()
                 self.player.velocity = self.shadow.velocity.copy()
                 self.player.grounded = self.shadow.grounded

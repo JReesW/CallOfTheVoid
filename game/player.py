@@ -163,13 +163,18 @@ class Player(pygame.sprite.Sprite):
                 self.grabbed = box
                 box.held = True
 
-    def drop_box(self):
+    def drop_box(self, force=False):
         """
         Drop a box in front of the player, if there's space to do so
         """
         x = self.rect.left - 24 if self.looking_left else self.rect.right + 24
         self.grabbed.rect.center = (x, self.rect.top + 24)
         if self.grabbed.rect.collidelist(self.level.blocks) == -1:
+            self.grabbed.held = False
+            self.grabbed.grounded = False
+            self.grabbed = None
+        elif force:
+            self.grabbed.rect.center = self.rect.centerx, self.rect.centery
             self.grabbed.held = False
             self.grabbed.grounded = False
             self.grabbed = None
