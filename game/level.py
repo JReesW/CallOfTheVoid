@@ -159,7 +159,7 @@ def load_level(name: str, editing: bool = False) -> Level:
             ],
             "not_editable": ["DOOR"],
             "deadly": ["SPL", "SP", "SPR"],
-            "solid": ["TL", "T", "TR", "ML", "M", "MR", "BL", "B", "BR", "CTL", "CTR", "CBL", "CBR"],
+            "solid": ["TL", "T", "TR", "ML", "M", "MR", "BL", "B", "BR", "CTL", "CTR", "CBL", "CBR", "SPL", "SPR"],
             "start": [5, 21],
             "end": [34, 21],
             "ladders": [],
