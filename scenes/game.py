@@ -1,7 +1,7 @@
 import pygame
 
 from engine.scene import Scene
-from engine import colors, director, image
+from engine import colors, director, image, text
 
 from game.player import Player
 from game.gate import Gate
@@ -45,6 +45,9 @@ class GameScene(Scene):
         self.boxes = [Box(self.level, start) for start in self.level.boxes]
 
         self.smoke = SmokeSystem()
+
+        self.title = self.generate_title()
+        self.show_title = "keep_music" not in kwargs  # don't think too much about it :^)
     
     def handle_events(self, events):
         for event in events:
@@ -65,6 +68,18 @@ class GameScene(Scene):
 
     def update(self, dt):
         self.ticks += 1
+
+        if self.show_title:
+            if self.ticks < 30:
+                alpha = pygame.math.clamp(int(pygame.math.remap(0, 30, 0, 255, self.ticks)), 0, 255)
+            elif self.ticks > 150:
+                alpha = 0
+                self.show_title = False
+            elif self.ticks > 120:
+                alpha = pygame.math.clamp(int(pygame.math.remap(120, 150, 255, 0, self.ticks)), 0, 255)
+            else:
+                alpha = 255
+            self.title.set_alpha(alpha)
 
         blocks = self.level.blocks + [b.rect for b in self.boxes if not b.held] + [g.rect for g in self.gates.values()]
         if not self.frozen:
@@ -139,6 +154,11 @@ class GameScene(Scene):
                 pygame.draw.rect(surface, colors.alice_blue, plate.rect, 2)
             for gate in self.gates.values():
                 pygame.draw.rect(surface, colors.orange, gate.rect, 2)
+        
+        if self.show_title:
+            rect = pygame.Rect(0, 0, *self.title.get_size())
+            rect.center = (960, 50)
+            surface.blit(self.title, rect)
     
     def freeze_time(self):
         """
@@ -195,3 +215,16 @@ class GameScene(Scene):
         Restart the level
         """
         director.change_scene("Fadeout", self, GameScene(self.level_name, keep_music=self.music_timestamp))
+
+    def generate_title(self) -> pygame.Surface:
+        """
+        Generate a title for the level name, shown when starting a level
+        """
+        surf, rect = text.render(self.level.name, colors.black, "Comic Sans", 48, True)
+        title_rect = pygame.Rect(0, 0, max(rect.width + 20, 200), rect.height + 20)
+        surface = pygame.Surface(title_rect.size, pygame.SRCALPHA)
+        pygame.draw.rect(surface, colors.white, title_rect, border_radius=10)
+        pygame.draw.rect(surface, colors.black, title_rect, 4, border_radius=10)
+        rect.center = title_rect.center
+        surface.blit(surf, rect)
+        return surface

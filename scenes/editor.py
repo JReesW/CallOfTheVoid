@@ -102,7 +102,7 @@ class EditorScene(Scene):
                 elif self.selecting_elements and self.elements[self.elements_index] == "gate" and not (self.selecting_start or self.selecting_end):
                     self.change_gate_length(event.y)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if self.selecting_tiles:
+                if self.selecting_tiles and event.button == 1:
                     if self.start_selector.collidepoint(self.mouse):
                         self.selecting_start = True
                         self.selecting_tiles = False
@@ -324,6 +324,7 @@ class EditorScene(Scene):
         """
         level = {
             "spritesheet": self.level.spritesheet_name,
+            "name": self.level.name,
             "world": self.level.world,
             "not_editable": self.level.not_editable,
             "deadly": self.level.deadly,
