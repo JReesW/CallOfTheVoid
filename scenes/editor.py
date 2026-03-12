@@ -84,9 +84,12 @@ class EditorScene(Scene):
                     self.selecting_end = False
                     self.selecting_links = 0
                     self.start_link = None
-                elif event.key == pygame.K_r and not (self.selecting_start or self.selecting_end):
+                elif event.key == pygame.K_r and not (self.selecting_start or self.selecting_end or self.selecting_links):
                     if self.selecting_elements and self.elements[self.elements_index] == "gate":
                         self.rotate_gate()
+                elif event.key == pygame.K_i and not (self.selecting_start or self.selecting_end or self.selecting_links):
+                    if self.selecting_elements and self.elements[self.elements_index] == "gate":
+                        self.invert_gate()
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_LSHIFT:
                     self.selecting_tiles = False    
@@ -162,20 +165,21 @@ class EditorScene(Scene):
         surface.blit(self.level.surface, (0, 0))
 
         # Gate information
-        for x, y, r, l in self.level.gates:
+        for x, y, r, l, i in self.level.gates:
             cx, cy = (x * 48 + 24, y * 48 + 12)
+            color = colors.white if i else colors.black
             if r % 2 == 0:
                 ly = cy + (-20 if r == 2 else 20)
                 dy = (l * 48 - 10) * (1 if r == 2 else -1)
-                pygame.draw.line(surface, colors.black, (cx-20, ly), (cx+20, ly), 4)
-                pygame.draw.line(surface, colors.black, (cx-15, ly+dy), (cx+15, ly+dy), 3)
-                pygame.draw.line(surface, colors.black, (cx, ly), (cx, ly + dy), 2)
+                pygame.draw.line(surface, color, (cx-20, ly), (cx+20, ly), 4)
+                pygame.draw.line(surface, color, (cx-15, ly+dy), (cx+15, ly+dy), 3)
+                pygame.draw.line(surface, color, (cx, ly), (cx, ly + dy), 2)
             else:
                 lx = cx + (-20 if r == 3 else 20)
                 dx = (l * 48 - 10) * (1 if r == 3 else -1)
-                pygame.draw.line(surface, colors.black, (lx, cy-20), (lx, cy+20), 4)
-                pygame.draw.line(surface, colors.black, (lx+dx, cy-15), (lx+dx, cy+15), 3)
-                pygame.draw.line(surface, colors.black, (lx, cy), (lx + dx, cy), 2)
+                pygame.draw.line(surface, color, (lx, cy-20), (lx, cy+20), 4)
+                pygame.draw.line(surface, color, (lx+dx, cy-15), (lx+dx, cy+15), 3)
+                pygame.draw.line(surface, color, (lx, cy), (lx + dx, cy), 2)
         
         # Links
         if self.show_links:
@@ -290,9 +294,9 @@ class EditorScene(Scene):
         """
         element = self.elements[self.elements_index]
         if element == "gate":
-            gates = {(gx, gy): (gr, gl) for gx, gy, gr, gl in self.level.gates}
+            gates = {(gx, gy): (gr, gl, gi) for gx, gy, gr, gl, gi in self.level.gates}
             if m == 1 and (x, y) not in gates:
-                self.level.gates.append([x, y, 0, 2])
+                self.level.gates.append([x, y, 0, 2, 0])
                 self.changes_made = True
             elif m == 3 and (x, y) in gates:
                 self.level.gates.remove([x, y, *gates[(x, y)]])
@@ -351,26 +355,39 @@ class EditorScene(Scene):
         """
         When in gate-placing-mode, rotate a gate on an R-press
         """
-        gates = {(gx, gy): (gr, gl) for gx, gy, gr, gl in self.level.gates}
+        gates = {(gx, gy): (gr, gl, gi) for gx, gy, gr, gl, gi in self.level.gates}
         x, y, _ = self.highlighted
 
         if (x, y) in gates:
-            r, l = gates[(x, y)]
-            self.level.gates.remove([x, y, r, l])
-            self.level.gates.append([x, y, (r-1)%4, l])
+            r, l, i = gates[(x, y)]
+            self.level.gates.remove([x, y, r, l, i])
+            self.level.gates.append([x, y, (r-1)%4, l, i])
             self.changes_made = True
     
     def change_gate_length(self, dl):
         """
         When in gate-placing-mode, change a gate's length on a scroll
         """
-        gates = {(gx, gy): (gr, gl) for gx, gy, gr, gl in self.level.gates}
+        gates = {(gx, gy): (gr, gl, gi) for gx, gy, gr, gl, gi in self.level.gates}
         x, y, _ = self.highlighted
 
         if (x, y) in gates:
-            r, l = gates[(x, y)]
-            self.level.gates.remove([x, y, r, l])
-            self.level.gates.append([x, y, r, maths.clamp(l + dl, 2, 8)])
+            r, l, i = gates[(x, y)]
+            self.level.gates.remove([x, y, r, l, i])
+            self.level.gates.append([x, y, r, maths.clamp(l + dl, 2, 8), i])
+            self.changes_made = True
+    
+    def invert_gate(self):
+        """
+        When in gate-placing-mode, invert a gate's state
+        """
+        gates = {(gx, gy): (gr, gl, gi) for gx, gy, gr, gl, gi in self.level.gates}
+        x, y, _ = self.highlighted
+
+        if (x, y) in gates:
+            r, l, i = gates[(x, y)]
+            self.level.gates.remove([x, y, r, l, i])
+            self.level.gates.append([x, y, r, l, 0 if i else 1])
             self.changes_made = True
     
     def lay_links(self):

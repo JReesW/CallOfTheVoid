@@ -34,11 +34,13 @@ class GameScene(Scene):
         self.veil = pygame.Surface(self.shadow.rect.size, pygame.SRCALPHA)
         self.veil.fill((0, 0, 0, 80))
 
-        self.gates = {(x, y): Gate(self.level, (x, y), r, l) for x, y, r, l in self.level.gates}
+        self.gates = {(x, y): Gate(self.level, (x, y), r, l, i) for x, y, r, l, i in self.level.gates}
 
         self.buttons = {(x, y): Button(self.level, (x, y)) for x, y in self.level.buttons}
         self.plates = {(x, y): Plate(self.level, (x, y)) for x, y in self.level.plates}
         self.lay_links()
+        for gate in self.gates.values():
+            gate.check_change()
 
         self.boxes = [Box(self.level, start) for start in self.level.boxes]
 

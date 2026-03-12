@@ -14,7 +14,7 @@ Gate rotation:
 
 
 class Gate(pygame.sprite.Sprite):
-    def __init__(self, level: Level, start: tuple[int, int], rotation: int, length: int, *args, **kwargs):
+    def __init__(self, level: Level, start: tuple[int, int], rotation: int, length: int, inverted: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
         self.level = level
@@ -24,6 +24,7 @@ class Gate(pygame.sprite.Sprite):
         self.start = start
         self.rotation = rotation
         self.length = length
+        self.inverted = bool(inverted)
         self.open = False
         self.inputs = {}
         self.dl = length
@@ -43,9 +44,9 @@ class Gate(pygame.sprite.Sprite):
     
     def check_change(self):
         if all(self.inputs.values()):
-            self.open = True
+            self.open = not self.inverted
         else:
-            self.open = False
+            self.open = self.inverted
     
     def calc_rect(self):
         dl = 48 * self.dl

@@ -50,7 +50,7 @@ class Level:
                 surface.blit(image.load_image("box"), (x * 48, y * 48 - 12))
             for x, y in self.buttons:
                 surface.blit(image.load_image("button_off"), (x * 48, y * 48 - 12))
-            for x, y, _, _ in self.gates:
+            for x, y, _, _, _ in self.gates:
                 surface.blit(image.load_image("gate"), (x * 48, y * 48 - 12), (0, 0, 48, 48))
             for x, y in self.plates:
                 surface.blit(image.load_image("plate_off"), (x * 48, y * 48))
