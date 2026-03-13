@@ -81,8 +81,8 @@ class GameScene(Scene):
                 alpha = 255
             self.title.set_alpha(alpha)
 
-        blocks = self.level.blocks + [b.rect for b in self.boxes if not b.held] + [g.rect for g in self.gates.values()]
         if not self.frozen:
+            blocks = self.level.blocks + [b.rect for b in self.boxes if not b.held] + [g.rect for g in self.gates.values()]
             self.player.update(dt, blocks, self.level.death_blocks)
             if self.player.rect.top > 1080 or self.player.dead:
                 self.restart()
@@ -100,9 +100,10 @@ class GameScene(Scene):
             if self.shadow.leaving_mark and self.ticks % 10 == 0 and not self.shadow.dead:
                 self.smoke.emit((self.shadow.rect.centerx, self.shadow.rect.bottom), 1)
         else:
-            held_boxes = [b.rect for b in self.boxes if b.held]
-            if self.shadow.collides_with_box: blocks += held_boxes
-            self.shadow.update(dt, blocks, self.level.death_blocks, held_boxes)
+            blocks = self.level.blocks + [g.rect for g in self.gates.values()]
+            boxes = [b.rect for b in self.boxes]
+            if self.shadow.collides_with_box: blocks += boxes
+            self.shadow.update(dt, blocks, self.level.death_blocks, boxes)
             if self.shadow.rect.top > 1280:
                 self.shadow.dead = True
                 self.shadow.leaving_mark = False
