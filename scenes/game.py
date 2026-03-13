@@ -1,7 +1,7 @@
 import pygame
 
 from engine.scene import Scene
-from engine import colors, director, image, text
+from engine import colors, director, image, text, mouse
 
 from game.player import Player
 from game.gate import Gate
@@ -56,6 +56,8 @@ class GameScene(Scene):
                     director.change_scene("EditorScene", level=self.level_name)
                 if event.key == pygame.K_h and (event.mod & pygame.KMOD_CTRL):
                     self.show_blocks = not self.show_blocks
+                if event.key == pygame.K_SEMICOLON:
+                    print(mouse.mousepos())
                 if event.key == pygame.K_LSHIFT:
                     self.freeze_time()
                 if event.key == pygame.K_r:
@@ -237,10 +239,12 @@ class GameScene(Scene):
         """
         Show a tutorial image
         """
-        name = self.level.name.lower()
-        if name == "cave entrance":
-            surface.blit(image.load_image("tutorials/jump"), (630, 330))
-            surface.blit(image.load_image("tutorials/move"), (1240, 880))
-        elif self.level.name.lower() == "mind the gap":
-            surface.blit(image.load_image("tutorials/toggle_button"), (100, 100))
-            surface.blit(image.load_image("tutorials/freeze_time"), (650, 200))
+        match self.level.name.lower():
+            case "cave entrance":
+                surface.blit(image.load_image("tutorials/jump"), (630, 330))
+                surface.blit(image.load_image("tutorials/move"), (1240, 880))
+            case "mind the gap":
+                surface.blit(image.load_image("tutorials/toggle_button"), (100, 100))
+                surface.blit(image.load_image("tutorials/freeze_time"), (650, 200))
+            case "projected weight":
+                surface.blit(image.load_image("tutorials/climb"), (1400, 200))
