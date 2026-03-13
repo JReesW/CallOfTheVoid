@@ -4,6 +4,7 @@ from scenes.levelSelect import LevelSelectScene
 from scenes.mainMenu import MainMenuScene
 from scenes.startup import StartupScene
 from scenes.settings import SettingsScene
+from scenes.fadeout import Fadeout
 
 
 scenes = [
@@ -13,4 +14,5 @@ scenes = [
     MainMenuScene,
     StartupScene,
     SettingsScene
+    Fadeout
 ]

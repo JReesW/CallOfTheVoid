@@ -1,0 +1,10 @@
+# resize 160x160 spritesheet to 480x480, and turn all black pixels white
+ffmpeg -i player_16x16.png -vf "scale=480:480:flags=neighbor,lutrgb=r='if(eq(val,0),255,val)':g='if(eq(val,0),255,val)':b='if(eq(val,0),255,val)'" shadow.png
+
+# resize 160x160 spritesheet to 480x480 using nearest neighbor
+ffmpeg -i player_16x16.png -vf "scale=480:480:flags=neighbor" player.png
+
+
+ffmpeg -i ladder_16x16.png -vf "scale=48:48:flags=neighbor" ladder.png
+ffmpeg -i ladder_16x16.png -vf "scale=iw*3:ih*3:flags=neighbor" ladder.png
+

@@ -1,6 +1,8 @@
 import pygame
 
 from engine.scene import Scene
+from engine.postprocessing import PostProcessing
+from engine.audio import AudioHandler
 
 import scenes
 
@@ -8,6 +10,8 @@ import scenes
 __scenes: dict[str, Scene] = {}
 scene: Scene = None
 next_scene: Scene = None
+post: PostProcessing = None
+audio: AudioHandler = AudioHandler()
 
 
 def change_scene(_scene: str, *args, **kwargs) -> None:
