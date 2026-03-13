@@ -169,7 +169,8 @@ class Player(pygame.sprite.Sprite):
         """
         x = self.rect.left - 24 if self.looking_left else self.rect.right + 24
         self.grabbed.rect.center = (x, self.rect.top + 24)
-        if self.grabbed.rect.collidelist(self.level.blocks) == -1:
+        gates = [g.rect for g in director.scene.gates.values()]
+        if self.grabbed.rect.collidelist(self.level.blocks + gates) == -1:
             self.grabbed.held = False
             self.grabbed.grounded = False
             self.grabbed = None
