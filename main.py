@@ -35,7 +35,7 @@ clock = pygame.time.Clock()
 running = True
 
 director.find_scenes()
-director.change_scene("EditorScene")
+director.change_scene("EditorScene", level="cave_entrance")
 director._set_scene()
 
 surface = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
