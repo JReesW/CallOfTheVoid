@@ -3,7 +3,7 @@ import pygame.freetype
 import sys
 import random
 from engine.scene import Scene
-from engine import colors, director, mouse
+from engine import colors, director, mouse, image
 from engine.util import get_path
 
 class MainMenuScene(Scene):
@@ -79,13 +79,12 @@ class MainMenuScene(Scene):
     def render(self, surface):
         surface.fill((111, 103, 118))
 
-        font = pygame.freetype.SysFont("Arial", 60, True)
+        titleSurface = image.load_image("title")
+        rect = pygame.Rect(0, 0, *titleSurface.get_size())
+        rect.centerx = surface.width / 2
+        rect.top = 200
 
-        titleSurface, titleRect = font.render("Game Name", colors.ghost_white)
-        titleRect.centerx = surface.width / 2
-        titleRect.top = 300
-
-        surface.blit(titleSurface, titleRect)
+        surface.blit(titleSurface, rect)
 
         #pygame.draw.rect(surface, colors.red, self.logoRect)
 

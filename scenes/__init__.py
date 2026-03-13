@@ -13,6 +13,6 @@ scenes = [
     LevelSelectScene,
     MainMenuScene,
     StartupScene,
-    SettingsScene
+    SettingsScene,
     Fadeout
 ]

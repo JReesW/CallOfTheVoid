@@ -23,12 +23,7 @@ class StartupScene(Scene):
     def handle_events(self, events):
         for event in events:
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    self.paused = not self.paused
-                elif event.key == pygame.K_RETURN:
-                    self.state = 0
-                    self.timer = 0
-                elif event.key == pygame.K_ESCAPE:
+                if event.key == pygame.K_ESCAPE or event.key == pygame.K_RETURN:
                     director.change_scene("MainMenuScene")
 
     def update(self, dt):
