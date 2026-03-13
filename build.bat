@@ -1,1 +1,1 @@
-pyinstaller --onefile --add-data "resources;resources" --clean --name "LLP Game" --icon=resources/images/solo_avatar_inverted.ico main.py
+pyinstaller --onefile --add-data "resources;resources" --clean --name "Call of the Void" --icon=resources/images/solo_avatar_inverted.ico main.py

@@ -17,6 +17,9 @@ class GameScene(Scene):
     def __init__(self, level: str = "test", *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        if level == ":end_game:":
+            director.change_scene("Completed")
+
         self.level_name = level
         self.level = load_level(level)
         self.allow_edit = "allow_edit" in kwargs and kwargs["allow_edit"]
@@ -63,6 +66,8 @@ class GameScene(Scene):
                     self.freeze_time()
                 if event.key == pygame.K_r:
                     self.restart()
+                if event.key == pygame.K_ESCAPE:
+                    director.change_scene("Pause", self)
         
         if not self.frozen:
             self.player.handle_events(events)
@@ -231,7 +236,8 @@ class GameScene(Scene):
 
     def win(self):
         if director.level_select is not None:
-            saveSystem.saveData["levelCleared"] = max(saveSystem.saveData["levelCleared"], director.level_select.pages[director.level_select.current_page].selected_node + 1)
+            last_level = max(saveSystem.saveData["levelCleared"], director.level_select.pages[director.level_select.current_page].selected_node + director.level_select.current_page * 7 + 1)
+            saveSystem.saveData["levelCleared"] = last_level
             saveSystem.save_save_data(saveSystem.saveData)
             director.audio.play_sound("win")
             director.audio.play_music("level-select")
@@ -264,3 +270,9 @@ class GameScene(Scene):
                 surface.blit(image.load_image("tutorials/freeze_time"), (650, 200))
             case "projected weight":
                 surface.blit(image.load_image("tutorials/climb"), (1400, 200))
+            case "boxing day":
+                surface.blit(image.load_image("tutorials/boxes"), (275, 820))
+            case "teleport":
+                surface.blit(image.load_image("tutorials/teleport"), (710, 855))
+            case "independence":
+                surface.blit(image.load_image("tutorials/world3"), (660, 825))

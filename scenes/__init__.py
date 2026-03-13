@@ -5,6 +5,9 @@ from scenes.mainMenu import MainMenuScene
 from scenes.startup import StartupScene
 from scenes.settings import SettingsScene
 from scenes.fadeout import Fadeout
+from scenes.complete import Completed
+from scenes.credits import Credits
+from scenes.pause import Pause
 
 
 scenes = [
@@ -14,5 +17,8 @@ scenes = [
     MainMenuScene,
     StartupScene,
     SettingsScene,
-    Fadeout
+    Fadeout,
+    Completed,
+    Credits,
+    Pause
 ]

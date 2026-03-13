@@ -62,6 +62,8 @@ class MainMenuScene(Scene):
                             director.change_scene("LevelSelectScene")
                         elif button == self.settingsButton:
                             director.change_scene("SettingsScene")
+                        elif button == self.creditsButton:
+                            director.change_scene("Credits")
                         elif button == self.quitButton:
                             pygame.quit()
                             sys.exit()

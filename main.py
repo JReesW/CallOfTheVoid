@@ -3,6 +3,7 @@ from pathlib import Path
 import pygame
 
 from engine import debug, director, postprocessing, mouse
+from engine.util import get_path
 
 pygame.init()
 pygame.freetype.init()
@@ -23,7 +24,7 @@ pygame.display.set_caption("Call of the Void")
 
 post = postprocessing.PostProcessing(
     SCREEN_SIZE,
-    str((Path.cwd() / "resources" / "shaders" / "postprocessing.glsl").absolute())
+    get_path("resources/shaders/postprocessing.glsl")
 )
 director.post = post
 

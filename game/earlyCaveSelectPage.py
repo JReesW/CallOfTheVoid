@@ -6,16 +6,13 @@ from engine import colors, image
 class EarlyCaveSelectPage(LevelSelectPage):
     def __init__(self):
         nodes = [
-            LevelNode("Cave Entrance", "cave_entrance", 1, (360, 250)),
-            LevelNode("Mind the Gap", "mind_gap", 2, (735, 260)),
-            LevelNode("Projected Weight", "projected_weight", 3, (1065, 260)),
-            LevelNode("Boxing Day", "boxing_day", 4, (1380, 350)),
-            LevelNode("Just Out of Reach", "out_of_reach", 5, (1190, 450)),
-            LevelNode("Climbing the Gate", "climb_gate", 6, (930, 570)),
-            LevelNode("Cave 7", "cave3", 7, (735, 650)),
-            LevelNode("Cave 8", "cave3", 8, (570, 870)),
-            LevelNode("Cave 9", "cave3", 9, (1010, 940)),
-            LevelNode("Cave 10", "cave3", 10, (1470, 930)),
+            LevelNode("Cave Entrance", "cave_entrance", 1, (400, 260)),
+            LevelNode("Mind the Gap", "mind_gap", 2, (1065, 260)),
+            LevelNode("Projected Weight", "projected_weight", 3, (1380, 350)),
+            LevelNode("Boxing Day", "boxing_day", 4, (1060, 495)),
+            LevelNode("Just Out of Reach", "out_of_reach", 5, (735, 650)),
+            LevelNode("Climbing the Gate", "climb_gate", 6, (785, 900)),
+            LevelNode("The Climb", "the_climb", 7, (1400, 925))
         ]
         super().__init__(nodes)
     

@@ -24,6 +24,8 @@ class LevelSelectScene(Scene):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     director.change_scene("MainMenuScene")
+                if event.key == pygame.K_k:
+                    print(self.pages[self.current_page].selected_node)
 
     def update(self, dt):
         currentPage = self.pages[self.current_page]

@@ -4,6 +4,7 @@ import pygame.freetype
 from game.levelNode import LevelNode
 from game import saveSystem
 from scenes.game import GameScene
+from scenes.complete import Completed
 
 from engine import colors, director
 
@@ -57,8 +58,11 @@ class LevelSelectPage:
             return False, 0
     
     def play_selected_node(self):
-        selected_level = self.nodes[self.selected_node]
-        director.change_scene("Fadeout", self, GameScene(selected_level.level))
+        selected_level = self.nodes[self.selected_node].level
+        if selected_level == ":end_game:":
+            director.change_scene("Fadeout", self, Completed())
+        else:
+            director.change_scene("Fadeout", self, GameScene(selected_level))
     
     def render(self, surface):
         lineSurface = pygame.Surface(surface.get_size(), pygame.SRCALPHA)

@@ -7,6 +7,8 @@ from pathlib import Path
 import pygame
 import moderngl
 
+from engine.util import get_path
+
 
 class PostProcessing:
     """
@@ -69,7 +71,7 @@ class PostProcessing:
             self._ibo
         )
 
-        overlay_shader =  str((Path.cwd() / "resources" / "shaders" / "overlay.glsl").absolute())
+        overlay_shader = get_path("resources/shaders/overlay.glsl")
 
         self._overlay_program = self._context.program(
             vertex_shader=base_vertex_shader,
