@@ -10,13 +10,14 @@ from game.level import load_level
 
 
 class EditorScene(Scene):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, level: str = "test", *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         director.post.reset()
         director.audio.stop_music()
 
-        self.level = load_level("test", editing=True)
+        self.level_name = level
+        self.level = load_level(level, editing=True)
 
         # Mouse info
         self.mouse = (0, 0)
@@ -339,7 +340,7 @@ class EditorScene(Scene):
             "plates": self.level.plates,
             "links": self.level.links
         }
-        with open(get_path(f"resources/levels/test.json"), 'w') as f:
+        with open(get_path(f"resources/levels/{self.level_name}.json"), 'w') as f:
             json.dump(level, f)
         self.changes_made = False
     
@@ -350,7 +351,7 @@ class EditorScene(Scene):
         if self.changes_made:
             self.changes_warning = 300
         else:
-            director.change_scene("GameScene", allow_edit=True)
+            director.change_scene("GameScene", level=self.level_name, allow_edit=True)
     
     def rotate_gate(self):
         """

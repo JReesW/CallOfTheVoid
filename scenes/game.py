@@ -53,7 +53,7 @@ class GameScene(Scene):
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p and (event.mod & pygame.KMOD_CTRL) and self.allow_edit:
-                    director.change_scene("EditorScene")
+                    director.change_scene("EditorScene", level=self.level_name)
                 if event.key == pygame.K_h and (event.mod & pygame.KMOD_CTRL):
                     self.show_blocks = not self.show_blocks
                 if event.key == pygame.K_LSHIFT:
@@ -169,7 +169,7 @@ class GameScene(Scene):
         """
         self.frozen = not self.frozen
         director.post.saturation = 0 if self.frozen else 1
-        director.post.value = 0.5 if self.frozen else 1
+        director.post.value = 0.7 if self.frozen else 1
         track = f"world{self.level.world}{'-alt' if self.frozen else ''}"
         self.music_timestamp += pygame.mixer.music.get_pos()/1000
         try:
@@ -237,6 +237,10 @@ class GameScene(Scene):
         """
         Show a tutorial image
         """
-        if self.level.name == "Mind the gap":
+        name = self.level.name.lower()
+        if name == "cave entrance":
+            surface.blit(image.load_image("tutorials/jump"), (630, 330))
+            surface.blit(image.load_image("tutorials/move"), (1240, 880))
+        elif self.level.name.lower() == "mind the gap":
             surface.blit(image.load_image("tutorials/toggle_button"), (100, 100))
             surface.blit(image.load_image("tutorials/freeze_time"), (650, 200))
