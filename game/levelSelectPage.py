@@ -1,15 +1,18 @@
 import pygame
 import pygame.freetype
+
 from game.levelNode import LevelNode
 from game import saveSystem
-from engine import colors
+from scenes.game import GameScene
+
+from engine import colors, director
+
 
 class LevelSelectPage:
     def __init__(self, nodes : list[LevelNode]):
         self.nodes = nodes
 
         self.selected_node = 0
-        self.font = pygame.freetype.SysFont("Arial", 20)
     
     def handle_events(self, events):
         for event in events:
@@ -40,8 +43,7 @@ class LevelSelectPage:
                         continue
                     self.selected_node = nextNode
                 elif event.key == pygame.K_RETURN:
-                    saveSystem.saveData["levelCleared"] += 1
-                    saveSystem.save_save_data(saveSystem.saveData)
+                    self.play_selected_node()
                 elif event.key == pygame.K_BACKSPACE:
                     saveSystem.saveData["levelCleared"] = max(0, saveSystem.saveData["levelCleared"] - 1)
                     saveSystem.save_save_data(saveSystem.saveData)
@@ -56,7 +58,7 @@ class LevelSelectPage:
     
     def play_selected_node(self):
         selected_level = self.nodes[self.selected_node]
-        # load it
+        director.change_scene("Fadeout", self, GameScene(selected_level.level))
     
     def render(self, surface):
         lineSurface = pygame.Surface(surface.get_size(), pygame.SRCALPHA)
@@ -93,12 +95,6 @@ class LevelSelectPage:
                 pygame.draw.circle(levelSurface, colors.yellow, node.position, 25)
 
             pygame.draw.circle(levelSurface, levelColor, node.position, 20)
-
-            textSurface, textRect = self.font.render(node.name, colors.black)
-            textRect.x = node.position[0] - textRect.width // 2
-            textRect.top = node.position[1] + 30
-
-            levelSurface.blit(textSurface, textRect)
 
         surface.blit(lineSurface, (0, 0))
         surface.blit(levelSurface, (0, 0))

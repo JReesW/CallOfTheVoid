@@ -10,6 +10,7 @@ from game.plate import Plate
 from game.level import load_level, Level
 from game.box import Box
 from game.smoke import SmokeSystem
+from game import saveSystem
 
 
 class GameScene(Scene):
@@ -26,7 +27,7 @@ class GameScene(Scene):
             director.audio.play_music(f"world{self.level.world}")
         else:
             self.music_timestamp = kwargs["keep_music"]
-        [director.audio.load_sound(sound) for sound in ["freeze", "unfreeze", "jump", "button_off", "button_on", "box"]]
+        [director.audio.load_sound(sound) for sound in ["freeze", "unfreeze", "jump", "button_off", "button_on", "box", "win", "death"]]
 
         self.player = Player(self.level)
         self.shadow = Player(self.level, shadow=True)
@@ -87,6 +88,7 @@ class GameScene(Scene):
             blocks = self.level.blocks + [b.rect for b in self.boxes if not b.held] + [g.rect for g in self.gates.values()]
             self.player.update(dt, blocks, self.level.death_blocks)
             if self.player.rect.top > 1080 or self.player.dead:
+                director.audio.play_sound("death")
                 self.restart()
             
             for plate in self.plates.values():
@@ -101,12 +103,16 @@ class GameScene(Scene):
             
             if self.shadow.leaving_mark and self.ticks % 10 == 0 and not self.shadow.dead:
                 self.smoke.emit((self.shadow.rect.centerx, self.shadow.rect.bottom), 1)
+            
+            if self.player.rect.colliderect(self.level.win_block):
+                self.win()
         else:
             blocks = self.level.blocks + [g.rect for g in self.gates.values()]
             boxes = [b.rect for b in self.boxes]
             if self.shadow.collides_with_box: blocks += boxes
             self.shadow.update(dt, blocks, self.level.death_blocks, boxes)
             if self.shadow.rect.top > 1280:
+                director.audio.play_sound("death")
                 self.shadow.dead = True
                 self.shadow.leaving_mark = False
                 self.freeze_time()
@@ -159,6 +165,7 @@ class GameScene(Scene):
                 pygame.draw.rect(surface, colors.alice_blue, plate.rect, 2)
             for gate in self.gates.values():
                 pygame.draw.rect(surface, colors.orange, gate.rect, 2)
+            pygame.draw.rect(surface, colors.purple, self.level.win_block, 2)
         
         if self.show_title:
             rect = pygame.Rect(0, 0, *self.title.get_size())
@@ -222,6 +229,14 @@ class GameScene(Scene):
         """
         director.change_scene("Fadeout", self, GameScene(self.level_name, keep_music=self.music_timestamp, allow_edit=self.allow_edit))
 
+    def win(self):
+        if director.level_select is not None:
+            saveSystem.saveData["levelCleared"] = max(saveSystem.saveData["levelCleared"], director.level_select.pages[director.level_select.current_page].selected_node + 1)
+            saveSystem.save_save_data(saveSystem.saveData)
+            director.audio.play_sound("win")
+            director.audio.play_music("level-select")
+            director.change_scene("Fadeout", self, director.level_select)
+
     def generate_title(self) -> pygame.Surface:
         """
         Generate a title for the level name, shown when starting a level
@@ -233,6 +248,7 @@ class GameScene(Scene):
         pygame.draw.rect(surface, colors.black, title_rect, 4, border_radius=10)
         rect.center = title_rect.center
         surface.blit(surf, rect)
+        surface.set_alpha(0)
         return surface
 
     def show_tutorial(self, surface: pygame.Surface):

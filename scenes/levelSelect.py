@@ -3,6 +3,7 @@ from engine.scene import Scene
 from engine import colors, director
 from game.earlyCaveSelectPage import EarlyCaveSelectPage
 from game.middleCaveSelectPage import MiddleCaveSelectPage
+from game.lateCaveSelectPage import LateCaveSelectPage
 from game import saveSystem
 
 class LevelSelectScene(Scene):
@@ -10,10 +11,11 @@ class LevelSelectScene(Scene):
         super().__init__(*args, **kwargs)
         
         director.audio.play_music("level-select")
+        if director.level_select is None: director.level_select = self
 
         saveSystem.load_save_data()
 
-        self.pages = [EarlyCaveSelectPage(), MiddleCaveSelectPage()]
+        self.pages = [EarlyCaveSelectPage(), MiddleCaveSelectPage(), LateCaveSelectPage()]
         self.current_page = 0
 
     def handle_events(self, events):

@@ -36,6 +36,7 @@ class Level:
         self.blocks = self.generate_blocks(self.solid)
         self.death_blocks = self.generate_blocks(self.deadly)
         self.ladder_blocks = self.generate_ladder_blocks()
+        self.win_block = pygame.Rect(self.end[0] * 48 + 16, self.end[1] * 48 + 8, 16, 16)
 
     def generate_level_surface(self) -> pygame.Surface:
         """

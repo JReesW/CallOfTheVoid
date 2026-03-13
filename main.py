@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 import pygame
 
-from engine import debug, director, postprocessing
+from engine import debug, director, postprocessing, mouse
 
 pygame.init()
 pygame.freetype.init()
@@ -53,6 +53,8 @@ while running:
             sys.exit()
         if event.type == pygame.KEYDOWN and event.key == pygame.K_BACKQUOTE:
             debug.disable() if debug.is_active() else debug.enable()
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SEMICOLON:
+            print(mouse.mousepos())
 
     # Call the necessary scene functions of the active scene
     director.scene.handle_events(events)
