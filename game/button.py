@@ -1,6 +1,6 @@
 import pygame
 
-from engine import image
+from engine import image, director
 from game.level import Level
 
 
@@ -18,6 +18,7 @@ class Button(pygame.sprite.Sprite):
     
     def toggle(self):
         self.pressed = not self.pressed
+        director.audio.play_sound("button_on" if self.pressed else "button_off")
         self.image = image.load_image("button_on") if self.pressed else image.load_image("button_off")
         for output in self.outputs:
             output.inputs[self.start] = self.pressed

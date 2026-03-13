@@ -162,6 +162,7 @@ class Player(pygame.sprite.Sprite):
             if grab_block.colliderect(box):
                 self.grabbed = box
                 box.held = True
+                director.audio.play_sound("box")
 
     def drop_box(self, force=False):
         """
@@ -174,11 +175,13 @@ class Player(pygame.sprite.Sprite):
             self.grabbed.held = False
             self.grabbed.grounded = False
             self.grabbed = None
+            director.audio.play_sound("box")
         elif force:
             self.grabbed.rect.center = self.rect.centerx, self.rect.centery
             self.grabbed.held = False
             self.grabbed.grounded = False
             self.grabbed = None
+            director.audio.play_sound("box")
 
     def press_button(self):
         """

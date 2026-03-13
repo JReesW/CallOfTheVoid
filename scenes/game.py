@@ -26,7 +26,7 @@ class GameScene(Scene):
             director.audio.play_music(f"world{self.level.world}")
         else:
             self.music_timestamp = kwargs["keep_music"]
-        [director.audio.load_sound(sound) for sound in ["freeze", "unfreeze", "jump"]]
+        [director.audio.load_sound(sound) for sound in ["freeze", "unfreeze", "jump", "button_off", "button_on", "box"]]
 
         self.player = Player(self.level)
         self.shadow = Player(self.level, shadow=True)

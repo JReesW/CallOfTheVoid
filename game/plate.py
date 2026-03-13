@@ -33,6 +33,7 @@ class Plate(pygame.sprite.Sprite):
             self.toggle()
     
     def toggle(self):
+        director.audio.play_sound("button_on" if self.pressed else "button_off")
         self.image = image.load_image("plate_on") if self.pressed else image.load_image("plate_off")
         for output in self.outputs:
             output.inputs[self.start] = self.pressed
