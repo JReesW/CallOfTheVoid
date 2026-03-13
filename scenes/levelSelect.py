@@ -9,6 +9,8 @@ class LevelSelectScene(Scene):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
+        director.audio.play_music("level-select")
+
         saveSystem.load_save_data()
 
         self.pages = [EarlyCaveSelectPage(), MiddleCaveSelectPage()]
@@ -18,9 +20,7 @@ class LevelSelectScene(Scene):
         self.pages[self.current_page].handle_events(events)
         for event in events:
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p and (event.mod & pygame.KMOD_CTRL):
-                    director.change_scene("GameScene", allow_edit=True)
-                elif event.key == pygame.K_ESCAPE:
+                if event.key == pygame.K_ESCAPE:
                     director.change_scene("MainMenuScene")
 
     def update(self, dt):

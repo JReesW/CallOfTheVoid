@@ -7,8 +7,11 @@ from engine import colors, director, mouse, image
 from engine.util import get_path
 
 class MainMenuScene(Scene):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, keep_music: bool = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        if not keep_music:
+            director.audio.play_music("title")
 
         self.logo = pygame.image.load(get_path(f"resources/images/lowland_palms_splash.png")).convert_alpha()
         self.logoRect = self.logo.get_rect()

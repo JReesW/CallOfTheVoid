@@ -85,7 +85,7 @@ class SettingsScene(Scene):
                     self.updateMusicVolume()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    director.change_scene("MainMenuScene")
+                    director.change_scene("MainMenuScene", keep_music=True)
     
     def update(self, dt):
         for i in range(len(self.snowPoints)):
