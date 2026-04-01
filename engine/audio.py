@@ -1,6 +1,8 @@
 import pygame
 from engine.util import get_path
 
+from game.saveSystem import load_save_data
+
 
 class AudioHandler:
     """
@@ -9,13 +11,15 @@ class AudioHandler:
     
     def __init__(self):
         pygame.mixer.init()
+
+        save_data = load_save_data()
         
         # Music settings
-        self.music_volume = 0.7
+        self.music_volume = save_data["musicVolume"]
         self.music_muted = False
         
         # SFX settings
-        self.sfx_volume = 0.5
+        self.sfx_volume = save_data["soundVolume"]
         self.sfx_muted = False
         
         # Cache for loaded sounds

@@ -44,11 +44,13 @@ class SettingsScene(Scene):
         self.soundVolume = max(0, min(1, (self.mouse[0] - self.soundRect.left) / (self.soundRect.right - self.soundRect.left)))
         saveSystem.saveData["soundVolume"] = self.soundVolume
         saveSystem.save_save_data(saveSystem.saveData)
+        director.audio.set_sfx_volume(self.soundVolume)
     
     def updateMusicVolume(self):
         self.musicVolume = max(0, min(1, (self.mouse[0] - self.musicRect.left) / (self.musicRect.right - self.musicRect.left)))
         saveSystem.saveData["musicVolume"] = self.musicVolume
         saveSystem.save_save_data(saveSystem.saveData)
+        director.audio.set_music_volume(self.musicVolume)
     
     def resetSettings(self):
         self.soundVolume = saveSystem.saveData["soundVolume"]
