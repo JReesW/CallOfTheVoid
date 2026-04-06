@@ -112,10 +112,10 @@ class GameScene(Scene):
             if self.player.rect.colliderect(self.level.win_block):
                 self.win()
         else:
-            blocks = self.level.blocks + [g.rect for g in self.gates.values()]
-            boxes = [b.rect for b in self.boxes]
-            if self.shadow.collides_with_box: blocks += boxes
-            self.shadow.update(dt, blocks, self.level.death_blocks, boxes)
+            blocks = self.level.blocks + [g.rect for g in self.gates.values()] + [b.rect for b in self.boxes if not b.held]
+            held_box = [b.rect for b in self.boxes if b.held]
+            if self.shadow.collides_with_box: blocks += held_box
+            self.shadow.update(dt, blocks, self.level.death_blocks, held_box)
             if self.shadow.rect.top > 1280:
                 director.audio.play_sound("death")
                 self.shadow.dead = True
